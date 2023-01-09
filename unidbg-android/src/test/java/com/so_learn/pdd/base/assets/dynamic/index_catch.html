@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+    <title>Lego_container</title>
+</head>
+<body>
+<script type="text/javascript" crossorigin>
+function _isOBJByType(a,c){return Object.prototype.toString.call(a)==="[object "+(c||"Object")+"]"}function _processStackMsg(a){var c=a.stack.replace(/\n/gi,"").split(/\bat\b/).slice(0,5).join("@").replace(/\?[^:]+/gi,"");a=a.toString();0>c.indexOf(a)&&(c=a+"@"+c);return c}
+window.onerror=function(a,c,e,f,d){var b=a;d&&d.stack&&(b=_processStackMsg(d));_isOBJByType(b,"Event")&&(b+=b.type?"--"+b.type+"--"+(b.target?b.target.tagName+"::"+b.target.src:""):"");pinbridge&&pinbridge.callNative("LegoEngine","catchException",{timestamp:(new Date).getTime(),message:a,url:c,line:e,col:f,formatMsg:b,error:JSON.stringify(d)})};
+</script>
+<script type="text/javascript" charset="UTF-8" src="${bundle.js}"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "group_list":[
+    {
+      "group_id":"duoduoji01",
+      "emotion_list":[
+        {"index":"53","description":"在吗"},
+        {"index":"54","description":"OK"},
+        {"index":"39","description":"拜托"},
+        {"index":"41","description":"不好"},
+        {"index":"40","description":"便宜点嘛"},
+        {"index":"43","description":"发什么快递"},
+        {"index":"42","description":"等的花都谢了"},
+        {"index":"44","description":"给你五星好评"},
+        {"index":"49","description":"是正品吗"},
+        {"index":"45","description":"快递到哪了"},
+        {"index":"46","description":"买买买"},
+        {"index":"52","description":"谢谢"},
+        {"index":"47","description":"拼的多省的多"},
+        {"index":"48","description":"啥时候发货"},
+        {"index":"51","description":"我要退款"},
+        {"index":"50","description":"我伤心了"}
+      ]
+    }
+  ]
+}

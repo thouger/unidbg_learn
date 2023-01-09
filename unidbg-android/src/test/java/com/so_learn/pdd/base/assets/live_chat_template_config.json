@@ -1,0 +1,195 @@
+{
+  "default_config": {
+    "template": [
+      {
+        "template_id": "live_game_result_style",
+        "template": {
+          "elements": [
+            "content",
+            "image",
+            "button",
+            "background"
+          ],
+          "style": {
+            "content": {
+              "font_color": "#FFFFFF"
+            },
+            "button": {
+              "font_color": "#FFFFFF",
+              "background_color": [
+                "#FBBE10",
+                "#ED4000"
+              ],
+              "margin_left": 8,
+              "action_property": {
+                "finish": true
+              }
+            },
+            "image": {
+              "width": -2,
+              "height": 20
+            },
+            "background": {
+              "background_color": [
+                "#5114D6",
+                "#BE00C6"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "template_id": "live_share_result_style",
+        "template": {
+          "elements": [
+            "title",
+            "content",
+            "image",
+            "button",
+            "background"
+          ],
+          "style": {
+            "title": {
+              "font_color": "#FFD873"
+            },
+            "content": {
+              "font_color": "#FFD873"
+            },
+            "button": {
+              "font_color": "#151516",
+              "background_color": [
+                "#FFFFFF"
+              ],
+              "margin_left": 4
+            },
+            "image": {
+              "width": -2,
+              "height": 19,
+              "margin_left": 4
+            },
+            "background": {
+              "background_color": [
+                "#4d000000"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "template_id": "live_location_result_style",
+        "template": {
+          "elements": [
+            "title",
+            "content",
+            "image",
+            "button",
+            "background"
+          ],
+          "style": {
+            "title": {
+              "font_color": "#FFD873"
+            },
+            "content": {
+              "font_color": "#FFD873"
+            },
+            "button": {
+              "font_color": "#151516",
+              "background_color": [
+                "#FFFFFF"
+              ],
+              "margin_left": 4
+            },
+            "image": {
+              "width": -2,
+              "height": 19,
+              "margin_left": 4
+            },
+            "background": {
+              "background_color": [
+                "#4d000000"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "template_id": "live_notice_follow_style",
+        "template": {
+          "elements": [
+            "title",
+            "content"
+          ],
+          "style": {
+            "title": {
+              "font_color": "#FFD873"
+            },
+            "content": {
+              "font_color": "#FFD873",
+              "space_left": 1
+            }
+          }
+        }
+      },
+      {
+        "template_id": "live_notice_enter_style",
+        "template": {
+          "elements": [
+            "title",
+            "content",
+            "labels"
+          ],
+          "style": {
+            "title": {
+              "font_color": "#FFD873"
+            },
+            "content": {
+              "font_color": "#FFD873",
+              "space_left": 1
+            },
+            "labels": {
+              "font_color": "#9EFFC2",
+              "space_left": 2
+            }
+          }
+        }
+      },
+      {
+        "template_id": "live_go_redbox_result_style",
+        "template": {
+          "elements": [
+            "title",
+            "content",
+            "image",
+            "button",
+            "background"
+          ],
+          "style": {
+            "title": {
+              "font_color": "#FFD873"
+            },
+            "content": {
+              "font_color": "#FFD873"
+            },
+            "button": {
+              "font_color": "#151516",
+              "background_color": [
+                "#FFFFFF"
+              ],
+              "margin_left": 4
+            },
+            "image": {
+              "width": -2,
+              "height": 19,
+              "margin_left": 4
+            },
+            "background": {
+              "background_color": [
+                "#4d000000"
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+{
+	"items": [
+		{
+			"id": 101,
+			"name": "separator"
+		},
+		{
+			"id": 4,
+			"name": "direct_pay",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/Payment.png",
+			"title": "免密支付设置",
+			"link": "direct_pay_settings.html?from=setting.html",
+			"page_el_sn": "2058663"
+		},
+		{
+			"id": 5,
+			"name": "group_free",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/Groupfree.png",
+			"title": "免拼设置",
+			"link": "group_free_settings.html?from=setting.html",
+			"page_el_sn": "2058662"
+		},
+		{
+			"id": 6,
+			"name": "pinxiaoquan",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/Pinxiaoquan.png",
+			"title": "拼小圈设置",
+			"link": "setting_privacy.html?from=setting.html",
+			"page_el_sn": "2096987"
+		},
+		{
+			"id": 7,
+			"name": "message_receive",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/Message.png",
+			"title": "消息接收设置",
+			"link": "messages_settings.html",
+			"page_el_sn": "2058661"
+		},
+		{
+			"id": 8,
+			"name": "live",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/liveplaysetting.png",
+			"title": "直播、照片、视频设置",
+			"link": "live_play_setting.html?from=setting.html",
+			"page_el_sn": "2058660"
+		},
+		{
+			"id": 101,
+			"name": "separator"
+		},
+		{
+			"id": 9,
+			"name": "common_questions",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/FAQ.png",
+			"title": "常见问题",
+			"link": "questions.html?from=setting.html",
+			"page_el_sn": "2055563"
+		},
+		{
+			"id": 10,
+			"name": "feedback",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/Feedback.png",
+			"title": "意见反馈",
+			"link": "personal_feedback.html?from=setting.html",
+			"page_el_sn": "2055562"
+		},
+		{
+			"id": 101,
+			"name": "separator"
+		},
+		{
+			"id": 11,
+			"name": "store_access",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/Free_to_enter.png",
+			"title": "免费入驻拼多多",
+			"link": "vgt_free_entrance.html",
+			"page_el_sn": "2055561"
+		},
+		{
+			"id": 101,
+			"name": "separator"
+		},
+		{
+			"id": 13,
+			"name": "clear_cache",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/Clearcache.png",
+			"title": "清除缓存",
+			"link": "clear_cache.html?from=setting.html",
+			"page_el_sn": "2055560"
+		},
+		{
+			"id": 14,
+			"name": "about",
+			"icon": "",
+			"image": "https://pinduoduoimg.yangkeduo.com/personal/setting/About_pdd.png",
+			"title": "关于拼多多",
+			"link": "terms_list.html?about_pdd=1&from=setting.html&show_check_version=1",
+			"page_el_sn": "435085"
+		}
+	]
+}

@@ -1,0 +1,21 @@
+{
+    "filterID": 0,
+    "filterName": "PDDGPUImageShaderToyFilter",
+    "filterDescription": "",
+    "propertys": [{
+                        "propertyType": "imageVector",
+                        "propertySourceName":["lut.png"],
+                        "propertyName": "extraTextures"
+                    },{
+                        "propertyType": "int",
+                        "propertyValue": 1,
+                        "propertyName": "extraTextureCount"
+                    }],
+    "uniforms":[
+        {
+            "uniformType": "float",
+            "uniformValue":0.5,
+            "uniformName": "intensity"
+        }
+    ]
+}

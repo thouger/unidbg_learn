@@ -1,0 +1,50 @@
+[
+  {
+    "group_index": 0,
+    "tab_name": "index.html",
+    "badge_keys": [
+      "badge_timeline"
+    ],
+    "dot_keys": [
+      "dot_timeline"
+    ]
+  },
+  {
+    "group_index": 1,
+    "tab_name": "recommended.html",
+    "badge_keys": [],
+    "dot_keys": []
+  },
+  {
+    "group_index": 2,
+    "tab_name": "classification.html",
+    "badge_keys": [],
+    "dot_keys": []
+  },
+  {
+    "group_index": 3,
+    "tab_name": "chat_list.html",
+    "badge_keys": [
+      "badge_doctor_consult",
+      "badge_message_box",
+      "badge_pddid_message_box",
+      "badge_mall_message",
+      "badge_message_live_expert"
+    ],
+    "dot_keys": []
+  },
+  {
+    "group_index": 4,
+    "tab_name": "personal.html",
+    "badge_keys": [ "badge_comment"],
+    "dot_keys": []
+  },
+  {
+    "group_index": 7,
+    "tab_name": "psnl_mall_collection.html",
+    "badge_keys": [],
+    "dot_keys": [
+      "dot_favorite"
+    ]
+  }
+]

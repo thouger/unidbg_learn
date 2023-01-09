@@ -1,0 +1,11 @@
+{
+  "default_config": {
+    "replay_room_url_list": [
+      "single_live_room_replay.html"
+    ],
+    "gate_white_list": [
+      "pdd_mall",
+      "pdd_goods_detail"
+    ]
+  }
+}

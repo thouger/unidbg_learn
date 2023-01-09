@@ -1,0 +1,1901 @@
+global:
+  feature_order: function () { return feature.sort_rank; }
+  poi_filter: function() { return $zoom < feature.aoi_z }
+
+styles:
+  train-dashes:
+    blend: inlay
+    base: lines
+    dash: [10, 10]
+
+  bl-dashes:
+    base: lines
+    blend: overlay
+    blend_order: 2
+    dash: [2, 2]
+
+  hongkong-dashes:
+    base: lines
+    blend: overlay
+    blend_order: 2
+    dash: [2, 2, 5, 2]
+
+  line-overlay:
+    base: lines
+    blend: overlay
+    blend_order: 1
+
+  marker:
+    base: points
+    blend: overlay
+    blend_order: 5
+
+  marker-line:
+    base: lines
+    blend: overlay
+    blend_order: 3
+
+  marker-dashes:
+    base: lines
+    blend: overlay
+    blend_order: 3
+    dash: [1, 1]
+
+  marker-text:
+    base: points
+    blend: overlay
+    blend_order: 6
+    interactive: true
+
+  marker-arrows:
+    base: points
+    blend: overlay
+    blend_order: 4
+
+  pois:
+    base: points
+    texture: pois
+    blend: overlay
+  aois:
+    base: text
+
+scene:
+  background:
+    color: "#F0F3F6"
+
+sources:
+  osm:
+    type: MVT
+    url: https://apiv2.hutaojie.com/api/express-gis-map-api/tile3_1/base?z={z}&x={x}&y={y}&v=6
+    max_zoom: 18
+
+textures:
+  gis:
+    url: https://funimg.pddpic.com/personal/2020-10-21/2020-10-21/ab27218f-7f95-40d1-ba65-baa6745daba6.png
+    sprites:
+      arrow: [0, 0, 12, 9]
+  pois:
+    url: https://funimg.pddpic.com/gis_map/icon/1997a93b-f289-456b-b032-7cc69ca9ebc7.png.slim.png
+    sprites:
+      gov: [50, 50, 69, 83]
+      culture: [169, 50, 69, 83]
+      hosiptal: [288, 50, 69, 83]
+      university: [407, 50, 69, 83]
+      shopping: [50, 183, 69, 83]
+      building: [169, 183, 69, 83]
+      food: [288, 183, 69, 83]
+      stadium: [407, 183, 69, 83]
+      park: [50, 316, 69, 83]
+      edu: [169, 316, 69, 83]
+      bar: [288, 316, 69, 83]
+      coffee: [407, 316, 69, 83]
+      apartment: [50, 449, 69, 83]
+      airport: [169, 449, 69, 83]
+      train: [288, 449, 69, 83]
+      bus: [407, 449, 69, 83]
+      port: [50, 582, 69, 83]
+      express: [169, 582, 69, 83]
+      market: [288, 582, 69, 83]
+      hotel: [407, 582, 69, 83]
+      parking_lot: [50, 715, 69, 83]
+      gate: [169, 715, 69, 83]
+      mountain: [288, 715, 69, 83]
+      metro_transfer: [407, 722, 69, 69]
+      scenic: [50, 848, 69, 83]
+      others: [196, 882, 16, 16]
+      toilet: [288, 848, 69, 83]
+      capital: [432, 880, 20, 20]
+      prov_capital: [77, 1015, 16, 16]
+      city: [200, 1019, 8, 8]
+      tam: [273, 990, 98, 66]
+      finance: [407, 981, 69, 83]
+      medicine_retail: [50, 1114, 69, 83]
+      leisure: [169, 1114, 69, 83]
+      automobile_service: [288, 1114, 69, 83]
+      petrol_station: [407, 1114, 69, 83]
+      charging_station: [50, 1247, 69, 83]
+
+layers:
+  route_line_transit:
+    data: { source: route_line_transit }
+    navigate-main:
+      filter: { $geometry: line, lineStyle: 1 }
+      draw:
+        marker-line:
+          join: round
+          cap: round
+          color: "#25B513"
+          order: 5000
+          width: 7px
+
+    navigate-dash:
+      filter: { $geometry: line, lineStyle: 2 }
+      draw:
+        marker-dashes:
+          join: round
+          cap: round
+          color: "#25B513"
+          order: 5000
+          width: 7px
+
+    arrows:
+      filter: { $zoom: { min: 8 }, lineStyle: 1 }
+      draw:
+        marker-arrows:
+          texture: gis
+          flat: true
+          sprite: arrow
+          size: 5px
+          placement_min_length_ratio: 0
+          placement: spaced
+          placement_spacing: 16px
+          angle: auto
+
+  bl:
+    data: { source: osm }
+
+    country-boundary:
+      filter:
+        - { kind: ["0131", "013e", "0138", "0121|0143"] }
+
+      draw:
+        lines:
+          visible: true
+
+          order: 600
+
+          color: "#B0C1E5"
+
+          width: 2px
+
+          cap: round
+
+    country-boundary1:
+      filter:
+        - { kind: ["013b"] }
+
+      draw:
+        lines:
+          visible: true
+
+          order: 600
+
+          color: "#8FB5D4"
+
+          width: 2px
+
+          cap: round
+
+    country-boundary2:
+      filter:
+        - { kind: ["013a"] }
+      draw:
+        bl-dashes:
+          visible: true
+
+          order: 600
+
+          color: "#B0C1E5"
+
+          width: 2px
+
+          cap: round
+
+    province-boundary:
+      filter:
+        - { $zoom: { min: 4 }, kind: ["0132"] }
+
+      draw:
+        lines:
+          visible: true
+
+          order: 600
+
+          color: "#e1e1e1"
+
+          width: 1px
+
+          cap: round
+
+    undefined-boundary:
+      filter:
+        - { $zoom: { min: 4 }, kind: ["0139"] }
+
+      draw:
+        bl-dashes:
+          visible: true
+
+          order: 600
+
+          color: "#e1e1e1"
+
+          width: 1px
+
+          cap: round
+
+    province-boundary1:
+      filter:
+        - { $zoom: { min: 4 }, kind: ["013f"] }
+
+      draw:
+        bl-dashes:
+          visible: true
+
+          order: 600
+
+          color: "#e1e1e1"
+
+          width: 1px
+
+          cap: round
+
+    hongkong-boundary:
+      filter:
+        - { $zoom: { min: 4 }, kind: ["013c"] }
+
+      draw:
+        hongkong-dashes:
+          visible: true
+
+          order: 600
+
+          color: "#ebf1ff"
+
+          width: 1px
+
+          cap: round
+
+    railway-boundary:
+      filter:
+        - { $zoom: { min: 11 }, kind: ["0242", "0243"] }
+
+      draw:
+        train-dashes:
+          order: 1802
+          color: "#DCDEE0"
+          width: [[11, 1px], [15, 2px]]
+          cap: square
+          join: round
+
+        lines:
+          order: 1801
+          color: "#FFFFFF"
+          width: [[11, 1px], [15, 2px]]
+          cap: square
+          join: round
+          outline:
+            color: "#CCCCCC"
+            width: 0.5px
+
+        text:
+          priority: 10
+          font:
+            size: 10
+
+            fill: "#C1C2C4"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    trailway-city:
+      filter:
+        - { $zoom: { min: 11 }, kind: ["0241", "0245", "0246", "0244", "0247", "0248"] }
+
+      draw:
+        lines:
+          visible: true
+
+          order: 880
+
+          color: "#DCDEE0"
+
+          width: [[11, 1px], [15, 2px]]
+
+          cap: round
+
+        text:
+          priority: 10
+          font:
+            size: 10
+
+            fill: "#C1C2C4"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+  bp:
+    data: { source: osm }
+
+    water:
+      filter:
+        - { kind: ["0123", "0122", "0121", "0124", "0126", "01ff", "0125"] }
+
+      draw:
+        polygons:
+          order: 501
+
+          color: "#C0D6EE"
+
+    island:
+      filter:
+        - { kind: ["0143", "0145", "0146", "0147", "0148"] }
+
+      draw:
+        polygons:
+          order: 300
+
+          color: "#F0F3F6"
+
+    park:
+      filter:
+        - { kind: ["0141", "0144", "0142", "014a", "014b", "04ff"] }
+
+      draw:
+        polygons:
+          order: 402
+
+          color: "#DCEEC0"
+
+    parkAirport:
+      filter:
+        - { kind: ["0149"] }
+
+      draw:
+        polygons:
+          order: 399
+
+          color: "#DFEDE5"
+
+    university:
+      filter:
+        - { kind: ["0161"], $zoom: { min: 12 } }
+
+      draw:
+        polygons:
+          order: 312
+
+          color: "#DFEBED"
+
+    scenic:
+      filter:
+        - { kind: ["0172"], $zoom: { min: 12 } }
+
+      draw:
+        polygons:
+          order: 311
+
+          color: "#DCEEC0"
+
+    factory:
+      filter:
+        - { kind: ["0164"], $zoom: { min: 13 } }
+
+      draw:
+        polygons:
+          order: 310
+
+          color: "#DFE6ED"
+
+    squarePlaces:
+      filter:
+        - { kind: ["0179"], $zoom: { min: 13 } }
+
+      draw:
+        polygons:
+          order: 302
+
+          color: "#DCEEC0"
+
+    entainmentPlaces:
+      filter:
+        - { kind: ["0171"], $zoom: { min: 13 } }
+
+      draw:
+        polygons:
+          order: 301
+
+          color: "#DCEEC0"
+
+    bussinessPlace:
+      filter:
+        - { kind: ["0177", "0187"], $zoom: { min: 14 } }
+
+      draw:
+        polygons:
+          order: 303
+
+          color: "#E0DFED"
+
+    hosiptitalPlaces:
+      filter:
+        - { kind: ["0163"], $zoom: { min: 15 } }
+
+      draw:
+        polygons:
+          order: 401
+
+          color: "#EDDFDF"
+
+    parkingLot:
+      filter:
+        - { kind: ["0165"], $zoom: { min: 14 } }
+
+      draw:
+        polygons:
+          order: 305
+
+          color: "#EAF0F6"
+
+    exhibitionCenter:
+      filter:
+        - { kind: ["0173"], $zoom: { min: 12 } }
+
+      draw:
+        polygons:
+          order: 306
+
+          color: "#EDE8DF"
+
+    culturalVenues:
+      filter:
+        - { kind: ["0175"], $zoom: { min: 14 } }
+
+      draw:
+        polygons:
+          order: 307
+
+          color: "#EDE8DF"
+
+    statiumVenues:
+      filter:
+        - { kind: ["84ff"], $zoom: { min: 14 } }
+
+      draw:
+        polygons:
+          order: 309
+
+          color: "#E0DFED"
+
+    shoppingCenter:
+      filter:
+        - { kind: ["0162"], $zoom: { min: 12 } }
+
+      draw:
+        polygons:
+          order: 304
+          color: "#E0DFED"
+
+    transHub:
+      filter:
+        - { kind: ["0174"], $zoom: { min: 15 } }
+
+      draw:
+        polygons:
+          order: 304
+          color: "#DFE6ED"
+
+  t:
+    data: { source: osm }
+
+    CountryText:
+      filter:
+        - { kind: ["275000"] }
+
+      draw:
+        text:
+          font:
+            weight: 700
+
+            size: 16
+
+            fill: "#8D98A8"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    OnceanText:
+      filter:
+        - { kind: ["275008"] }
+
+      draw:
+        text:
+          font:
+            weight: 700
+
+            size: 14
+
+            fill: "#54a3e1"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    sepIslandText:
+      filter:
+        - { kind: ["275007", "275006"], $zoom: { min: 6 } }
+
+      draw:
+        text:
+          font:
+            weight: 700
+
+            size: 12
+
+            fill: "#8D98A8"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    downshipText:
+      filter:
+        - { kind: ["260000"], $zoom: { min: 13 } }
+
+      draw:
+        text:
+          font:
+            weight: 700
+
+            size: 12
+
+            fill: "#AFB6C2"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    waterText:
+      filter:
+        - { kind: ["275010"] }
+
+      draw:
+        text:
+          font:
+            weight: 700
+            size: 13
+            fill: "#54A3E1"
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    provinceText:
+      filter:
+        - { $zoom: { min: 4 }, kind: ["275001"] }
+      draw:
+        pois:
+          sprite: capital
+          size: [8px, 8px]
+          priority: 1
+          text:
+            anchor: top
+            priority: 1
+            font:
+              size: 13
+              fill: "#8D98A8"
+              stroke: { color: "#ffffff", width: 0.5 }
+
+    provinceText1:
+      filter:
+        - { $zoom: { min: 4 }, kind: ["275002"] }
+      draw:
+        text:
+          collide: false
+          priority: 2
+          font:
+            size: 11
+            fill: "#8D98A8"
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    provinceCityText:
+      filter:
+        - { $zoom: { min: 5}, kind: ["275003"] }
+
+      draw:
+        pois:
+          sprite: prov_capital
+          size: [6px, 6px]
+          priority: 3
+          text:
+            priority: 3
+            font:
+              weight: 700
+              size: [[5, 13], [6, 14]]
+              fill: "#8D98A8"
+              stroke: { color: "#ffffff", width: 0.5 }
+
+    cityText:
+      filter:
+        - { $zoom: { min: 6 }, kind: ["275004"] }
+
+      draw:
+        pois:
+          sprite: city
+          size: [5px, 5px]
+          priority: 4
+          text:
+            priority: 4
+            font:
+              weight: 700
+              size: [[6, 12], [8, 13], [10, 14]]
+              fill: "#AFB6C2"
+              stroke: { color: "#ffffff", width: 0.5 }
+
+    smallCityText:
+      filter:
+        - { $zoom: { min: 8 }, kind: ["275005"] }
+
+      draw:
+        text:
+          priority: 5
+          font:
+            weight: 700
+
+            size: [[8, 12], [10, 13]]
+
+            fill: "#AFB6C2"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+  bp_rp:
+    data: { source: osm }
+
+    draw:
+      polygons:
+        order: 400
+
+        color: "#E6ECF3"
+
+  building_int:
+    data: { source: osm }
+
+    draw:
+      polygons:
+        order: 601
+        color: "#F8FBFD"
+
+  passage_int:
+    data: { source: osm }
+    flyover:
+      filter:
+        - { class: "10000" }
+      draw:
+        lines:
+          join: round
+          cap: square
+          order: 2000
+          color: "#FFFFFF"
+          width: [[16, 2px], [17, 4px], [18, 4px]]
+          outline:
+            width: [[16, 1px], [17, 2px], [18, 2px]]
+            color: "#C0C2C4"
+    underpass:
+      filter:
+        - { class: "20000" }
+      draw:
+        lines:
+          join: round
+          cap: square
+          order: 1750
+          color: "#BEC4D0"
+          width: [[16, 2px], [17, 4px], [18, 4px]]
+          outline:
+            width: [[16, 0.5px], [17, 1px], [18, 1px]]
+            color: "#989CA6"
+
+  r:
+    data: { source: osm }
+
+    funcclass1:
+      filter:
+        - { $zoom: { min: 8 }, funcclass: "1" }
+
+      draw:
+        lines:
+          order: 1870
+
+          join: round
+
+          color: "#ffffff"
+
+          width: [[8, 1px], [9, 1px], [10, 2px], [11, 2px], [12, 2px], [13, 6px], [14, 6px], [15, 10px], [16, 10px], [17, 12px], [18, 14px]]
+
+          outline:
+            width: 0.5
+
+            color: [0.96, 0.96, 0.96]
+
+        text:
+          order: 900
+
+          text_source: pathname
+
+          font:
+            weight: 700
+
+            size: [[8, 0px], [9, 0px], [11, 14px], [12, 14px], [13, 14px], [14, 14px], [15, 15px], [16, 15px], [17, 16px], [18, 16px]]
+
+            fill: "#58595B"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    funcclass2:
+      filter:
+        - { $zoom: { min: 11 }, funcclass: "2" }
+
+      draw:
+        lines:
+          order: 1860
+
+          join: round
+
+          color: "#ffffff"
+
+          width: [[11, 1px], [12, 1px], [13, 4px], [14, 4px], [15, 8px], [16, 8px], [17, 10px], [18, 12px]]
+
+          outline:
+            width: 0.5
+
+            color: [0.96, 0.96, 0.96]
+
+    funcclass2-text1:
+      filter:
+        - { $zoom: { min: 11, max: 15 }, funcclass: "2" }
+
+      draw:
+        text:
+          order: 900
+
+          text_source: pathname
+
+          font:
+            weight: 700
+
+            size: [[11, 13px], [12, 13px], [13, 13px], [14, 13px], [15, 14px], [16, 14px], [17, 15px], [18, 16px]]
+
+            fill: "#9C9C9C"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    funcclass2-text2:
+      filter:
+        - { $zoom: { min: 15 }, funcclass: "2" }
+
+      draw:
+        text:
+          order: 900
+
+          text_source: pathname
+
+          font:
+            weight: 700
+
+            size: [[11, 13px], [12, 13px], [13, 13px], [14, 13px], [15, 14px], [16, 14px], [17, 15px], [18, 16px]]
+
+            fill: "#58595B"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    funcclass3:
+      filter:
+        - { $zoom: { min: 13 }, funcclass: "3" }
+
+      draw:
+        lines:
+          order: 1850
+
+          join: round
+
+          color: "#ffffff"
+
+          width: [[13, 2px], [14, 2px], [15, 6px], [16, 6px], [17, 8px], [18, 10px]]
+
+          outline:
+            width: 0.5
+
+            color: [0.96, 0.96, 0.96]
+
+        text:
+          order: 900
+
+          text_source: pathname
+
+          font:
+            size: [[13, 13px], [14, 13px], [15, 14px], [16, 14px], [17, 15px], [18, 16px]]
+
+            fill: "#9C9C9C"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    funcclass4:
+      filter:
+        - { $zoom: { min: 14 }, funcclass: "4" }
+
+      draw:
+        lines:
+          order: 1840
+
+          join: round
+
+          color: "#ffffff"
+
+          width: [[14, 2px], [15, 4px], [16, 4px], [17, 6px], [18, 8px]]
+
+          outline:
+            width: 0.5
+
+            color: [0.96, 0.96, 0.96]
+
+        text:
+          order: 900
+
+          text_source: pathname
+
+          font:
+            weight: 700
+
+            size: [[14, 12px], [15, 13px], [16, 13px], [17, 14px], [18, 15px]]
+
+            fill: "#9C9C9C"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    funcclass5:
+      filter:
+        - { $zoom: { min: 15 }, funcclass: "5" }
+
+      draw:
+        lines:
+          order: 1830
+
+          join: round
+
+          color: "#ffffff"
+
+          width: [[15, 2px], [16, 2px], [17, 4px], [18, 6px]]
+
+          outline:
+            width: 0.5
+
+            color: [0.96, 0.96, 0.96]
+
+        text:
+          order: 900
+
+          text_source: pathname
+
+          font:
+            weight: 700
+
+            size: [[15, 13px], [16, 13px], [17, 14px], [18, 15px]]
+
+            fill: "#9C9C9C"
+
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    funcclass6:
+      filter:
+        - { $zoom: { min: 16 }, funcclass: "6" }
+
+      draw:
+        lines:
+          order: 1820
+          cap: square
+          join: round
+          color: "#ffffff"
+          width: [[16, 1px], [17, 2px], [18, 2px]]
+          outline:
+            width: 0.5
+            color: [0.96, 0.96, 0.96]
+
+    funcclass7:
+      filter:
+        - { $zoom: { min: 9 }, funcclass: "7" }
+
+      draw:
+        lines:
+          order: 1810
+
+          join: round
+
+          color: "#ADC1D6"
+
+          width: [[9, 1px], [10, 1px], [11, 2px], [12, 2px], [13, 2px], [14, 2px], [15, 2px], [16, 2px], [17, 2px], [18, 2px]]
+
+          outline:
+            width: 0.5
+
+            color: [0.96, 0.96, 0.96]
+
+  mr_t:
+    data: { source: osm }
+
+    TAM:
+      filter:
+        - { kind: ["TAM"], $zoom: { min: 11 } }
+      draw:
+        pois:
+          priority: 1
+          sprite: tam
+          size: [[10, [22px, 12px]], [16, [32px, 18px]]]
+
+    PoiHouseNnumber:
+      filter:
+        - { kind: ["PtHsnm"] }
+      draw:
+        text:
+          priority: 6
+          font:
+            weight: 700
+            size: 12
+            fill: "#AFB6C2  "
+            stroke: { color: "#ffffff", width: 0.5 }
+
+    PoiGate:
+      filter:
+        - { gate: ["1", "2", "3"], $zoom: { min: 17 } }
+      exclusive: true
+      draw:
+        pois:
+          priority: 6
+          sprite: gate
+          size: [20px, 24px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#B2B7BE"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiFood:
+      filter:
+        - { kind: ["110101", "110102", "110103", "110200"], $zoom: { min: 17 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: food
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiBar:
+      filter:
+        - { kind: ["110301", "110302"], $zoom: { min: 18 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: bar
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiCoffee:
+      filter:
+        - { kind: ["110303", "110304"], $zoom: { min: 17 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: coffee
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiHotel:
+      filter:
+        - { kind: ["120101", "120102", "120103", "120104", "120105", "120106"], $zoom: { min: 13 } }
+
+      draw:
+        pois:
+          priority: 6
+          sprite: hotel
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiApartment:
+      filter:
+        - { kind: ["120201", "120202", "0178"], $zoom: { min: 13 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: apartment
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A3B8CC"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+    PoiShopping:
+      filter:
+        - {
+          kind:
+            [
+              "130101",
+              "130102",
+              "130301",
+              "130302",
+              "130303",
+              "130304",
+              "130401",
+              "130402",
+              "130403",
+              "130404",
+              "130405",
+              "130406",
+              "130407",
+              "130408",
+              "130409",
+              "130410",
+              "130411",
+              "130601",
+              "130602",
+              "130603",
+              "130700",
+              "130701",
+              "130702",
+              "130703",
+              "130704",
+              "130705",
+              "130800",
+              "130801",
+              "130803",
+              "130804",
+              "130805",
+              "130806",
+              "130807",
+              "130808",
+              "0162",
+              "0177",
+            ],
+          $zoom: { min: 13 },
+        }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: shopping
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#CCBCA3"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiMarket:
+      filter:
+        - { kind: ["130103", "130104", "130105", "130106", "130200", "130201", "130202", "130203", "130204", "130205", "130206", "130207"], $zoom: { min: 13 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: market
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiEdu:
+      filter:
+        - { kind: ["160101", "160102", "160103", "160104", "160106"], $zoom: { min: 12 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: edu
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiUniversity:
+      filter:
+        - { kind: ["160105", "160107", "0161"], $zoom: { min: 12 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: university
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A3C6CC"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiCulture:
+      filter:
+        - { kind: ["160205", "160206", "160207", "200101", "0173", "0175"], $zoom: { min: 12 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: culture
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#CDA591"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#CCBCA3"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiHospital:
+      filter:
+        - { kind: ["170101", "170102", "170103", "170104", "170105", "170106", "170107", "0163"], $zoom: { min: 12 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: hosiptal
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#CD9191"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#CCA3A3"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiStadium:
+      filter:
+        - { kind: ["180100", "180101", "180102", "180103", "180104", "180105", "180106", "180107", "180109", "180110", "180111", "0142"], $zoom: { min: 17 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: stadium
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A6CD91"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiPark:
+      filter:
+        - { kind: ["180304", "180305", "180306", "180308", "180309", "0141", "0144", "0171", "0179"], $zoom: { min: 12 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: park
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#A6CD91"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A6CD91"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiScenic:
+      filter:
+        - { kind: ["180400", "260300", "0172"], $zoom: { min: 9 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: scenic
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#A6CD91"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A6CD91"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiGov:
+      filter:
+        - {
+          kind: ["190100", "190101", "190102", "190103", "190104", "190105", "190106", "190107", "190108", "190109", "190110", "190111", "190112", "190113", "190114", "190200", "190201", "190202", "190203", "190204", "190205"],
+          $zoom: { min: 10 },
+        }
+      draw:
+        pois:
+          priority: 6
+          sprite: gov
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiBuilding:
+      filter:
+        - { kind: ["200103", "200104", "200105", "0187"], $zoom: { min: 13 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: building
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A3B8CC"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiExpress:
+      filter:
+        - { kind: ["210218", "230130", "230131"], $zoom: { min: 18 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: express
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiBus:
+      filter:
+        - { kind: ["230100", "230108"], $zoom: { min: 18 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: bus
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiTrain:
+      filter:
+        - { kind: ["230103", "230107"], $zoom: { min: 11 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: train
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiTransHub:
+      filter:
+        - { kind: ["0174"], $zoom: { min: 11 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: others
+            size: [8px, 8px]
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A3B8CC"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiMetroTransfer:
+      filter:
+        - { kind: ["230112", "230115"], $zoom: { min: 15 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: others
+          size: [8px, 8px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiAirport:
+      filter:
+        - { kind: ["230126", "0149"], $zoom: { min: 9 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: airport
+            size: [20px, 25px]
+            anchor: center
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A3CCC6"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiPort:
+      filter:
+        - { kind: ["230125"], $zoom: { min: 16 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: port
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiParkingLortNoText:
+      filter:
+        - { kind: ["230211", "230212", "230214", "230223", "230224", "230225", "230226"], $zoom: { min: 18 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: parking_lot
+          size: [20px, 25px]
+          anchor: center
+
+    PoiParkingLort:
+      filter:
+        - { kind: ["230206", "230207", "230213", "230230"], $zoom: { min: 12 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: parking_lot
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiToliet:
+      filter:
+        - { kind: ["210215"], $zoom: { min: 18 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: toilet
+          size: [20px, 25px]
+          anchor: center
+
+    PoiMountain:
+      filter:
+        - { kind: ["275009"], $zoom: { min: 13 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: mountain
+          size: [20px, 25px]
+          anchor: center
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#A6CD91"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiFinance:
+      filter:
+        - { kind: ["150101","150102","150103","150104","150200"] }
+      draw:
+        pois:
+          priority: 8
+          sprite: finance
+          size: [20px, 25px]
+          text:
+            priority: 8
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiMedicine_retail:
+      filter:
+        - { kind: ["130501","130502"] }
+      draw:
+        pois:
+          priority: 8
+          sprite: medicine_retail
+          size: [20px, 25px]
+          text:
+            priority: 8
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiLeisure:
+      filter:
+        - { kind: ["180201","180202","180203","180204","180205","180206","180209","180210","180211"] }
+      draw:
+        pois:
+          priority: 8
+          sprite: leisure
+          size: [20px, 25px]
+          text:
+            priority: 8
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiAutomobile_service:
+      filter:
+        - { kind: ["140101","140104","140103","140203","140201","140301","140302","140303","140304"] }
+      draw:
+        pois:
+          priority: 8
+          sprite: automobile_service
+          size: [20px, 25px]
+          text:
+            priority: 8
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    PoiPetrol_station:
+      filter:
+        - { kind: ["230215","230217"] }
+      draw:
+        pois:
+          priority: 8
+          sprite: petrol_station
+          size: [20px, 25px]
+
+    PoiCharging_station:
+      filter:
+        - { kind: ["230218"] }
+      draw:
+        pois:
+          priority: 8
+          sprite: charging_station
+          size: [20px, 25px]
+
+
+    Poi-Others:
+      filter:
+        - {
+          kind:
+            [
+              "140305",
+              "160108",
+              "160201",
+              "160202",
+              "190400",
+              "190402",
+              "190403",
+              "190404",
+              "190501",
+              "200200",
+              "200201",
+              "200300",
+              "200301",
+              "200302",
+              "200401",
+              "200402",
+              "200403",
+              "200400",
+              "200404",
+              "200405",
+              "210101",
+              "210102",
+              "210103",
+              "210104",
+              "210202",
+              "210203",
+              "210204",
+              "210205",
+              "210206",
+              "210207",
+              "210209",
+              "210210",
+              "210212",
+              "210213",
+              "210214",
+              "210216",
+              "210217",
+              "210219",
+              "210303",
+              "210400",
+              "220400",
+              "230111",
+              "230114",
+              "230132",
+              "230216",
+              "230219",
+              "230220",
+              "230221",
+              "230228",
+              "230229",
+              "230231",
+            ],
+          $zoom: { min: 18 },
+        }
+      draw:
+        pois:
+          priority: 6
+          sprite: others
+          size: [8px, 8px]
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    Poi-Others1:
+      filter:
+        - { kind: ["140202", "160109", "160203", "180301", "180302", "210105", "210201", "230129"], $zoom: { min: 17 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: others
+          size: [8px, 8px]
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    Poi-Others2:
+      filter:
+        - { kind: ["160204", "170201", "180310", "210211", "210301", "210302", "210304", "230128", "230203", "230204"], $zoom: { min: 16 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: others
+          size: [8px, 8px]
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    Poi-Others3:
+      filter:
+        - { kind: ["220100", "230105"], $zoom: { min: 15 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: others
+          size: [8px, 8px]
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    Poi-Others4:
+      filter:
+        - { kind: ["190401", "220300", "230209", "250200"], $zoom: { min: 14 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: others
+          size: [8px, 8px]
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    Poi-Others5:
+      filter:
+        - { kind: ["180307", "170201", "180310", "220200", "240100", "0164", "0165"], $zoom: { min: 13 } }
+      POI:
+        filter: global.poi_filter
+        exclusive: true
+        draw:
+          pois:
+            priority: 6
+            sprite: others
+            size: [8px, 8px]
+            text:
+              priority: 6
+              font:
+                size: 12
+                fill: "#C2C7D1"
+                stroke: { color: "#ffffff", width: 1 }
+                weight: 700
+      AOI:
+        draw:
+          text:
+            priority: 6
+            font:
+              size: 14
+              fill: "#A3B8CC"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    Poi-Others6:
+      filter:
+        - { kind: ["230201", "230202"], $zoom: { min: 12 } }
+      draw:
+        text:
+          priority: 6
+          font:
+            size: 12
+            fill: "#C2C7D1"
+            stroke: { color: "#ffffff", width: 1 }
+            weight: 700
+
+    Poi-Others7:
+      filter:
+        - { kind: ["260000"], $zoom: { min: 10 } }
+      draw:
+        text:
+          priority: 6
+          font:
+            size: 14
+            fill: "#C2C7D1"
+            stroke: { color: "#ffffff", width: 1 }
+            weight: 700
+
+    Poi-Others8:
+      filter:
+        - { kind: ["260100"], $zoom: { min: 10 } }
+      draw:
+        text:
+          priority: 6
+          font:
+            size: 12
+            fill: "#C2C7D1"
+            stroke: { color: "#ffffff", width: 1 }
+            weight: 700
+
+    Poi-Others9:
+      filter:
+        - { kind: ["250100"], $zoom: { min: 9 } }
+      draw:
+        pois:
+          priority: 6
+          sprite: others
+          size: [8px, 8px]
+          text:
+            priority: 6
+            font:
+              size: 12
+              fill: "#C2C7D1"
+              stroke: { color: "#ffffff", width: 1 }
+              weight: 700
+
+    Poi-Others10:
+      filter:
+        - { kind: ["260400"], $zoom: { min: 12, max: 14 } }
+      draw:
+        text:
+          priority: 6
+          font:
+            size: 14
+            fill: "#C2C7D1"
+            stroke: { color: "#ffffff", width: 1 }
+            weight: 700
+
+    Poi-Others11:
+      filter:
+        - { kind: ["260200"], $zoom: { min: 9 } }
+      draw:
+        text:
+          priority: 6
+          font:
+            size: 12
+            fill: "#91B3CD"
+            stroke: { color: "#ffffff", width: 1 }
+            weight: 700

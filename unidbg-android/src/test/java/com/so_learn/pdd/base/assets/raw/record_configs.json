@@ -1,0 +1,18 @@
+{
+  "DEFAULT": {
+    "encode_type": 0,
+    "hw_h264_encode": {
+      "video_width": 720,
+      "video_height": 1280,
+      "video_bit_bitrate": 4092000,
+      "video_fps": 30
+    },
+    "sw_h264_encode": {
+      "video_width": 720,
+      "video_height": 1280,
+      "video_fps": 30,
+      "video_bit_bitrate": 4092000,
+      "soft_encode_level": 0
+    }
+  }
+}

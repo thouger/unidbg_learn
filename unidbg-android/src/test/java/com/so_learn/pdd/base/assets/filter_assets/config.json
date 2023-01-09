@@ -1,0 +1,27 @@
+{
+    "name": "dazuizousifang",
+    "effect": {
+        "renderList": [
+            {
+                "type": "Filter",
+                "renderOrder": 1,
+                "path": "filter"
+            }
+        ],
+        "loop": 0
+    },
+    "faceDetect": {
+        "requireFace": false,
+        "need240DenseFacePoints": true,
+        "beautify": {
+            "faceLift":0.6,
+            "bigEye": 0.4,
+            "whiten": 0.2,
+            "skinGrind": 0.6
+        }
+    },
+    "disableCustomLutEffect": true,
+    "minVersion": 3000
+}
+
+

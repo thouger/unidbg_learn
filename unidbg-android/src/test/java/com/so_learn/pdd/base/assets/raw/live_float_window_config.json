@@ -1,0 +1,29 @@
+{
+  "default_config": {
+    "live_room_url_list": [
+      "ddplteec.html",
+      "live_room.html"
+    ],
+    "gate_white_list": [
+      "pdd_mall",
+      "pdd_goods_detail"
+    ],
+    "out_room_white_list": [
+      "pdd_mall",
+      "pdd_goods_detail",
+      "pdd_comment_list",
+      "web",
+      "chat",
+      "pdd_chat_live_expert",
+      "pdd_order_confirm"
+    ],
+    "out_room_url_black_list": [
+      "svideo_personal.html",
+      "app_chat_voice_call.html",
+      "app_live_video.html"
+    ],
+    "out_room_page_type_black_list": [
+      "pdd_live_play_room"
+    ]
+  }
+}

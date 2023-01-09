@@ -1,0 +1,19 @@
+{
+  "live_downgrade_config": {
+    "stall_threshold": "3",
+    "gap_time": "60000",
+    "resolution": "518400",
+    "get_info_interval": "100",
+    "jitter_count_limit": "5",
+    "log_count_sum": "5",
+    "slow_play_audio_cache_in_packet": "50",
+    "slow_play_video_cache_in_packet": "50",
+    "slow_playback_rate": [0.85, 1.0],
+    "fast_play_video_cache_in_packet": "500",
+    "fast_play_audio_cache_in_packet": "500",
+    "fast_playback_rate": [1.15, 1.2],
+    "jitter_time": "2000"
+  }
+}
+
+

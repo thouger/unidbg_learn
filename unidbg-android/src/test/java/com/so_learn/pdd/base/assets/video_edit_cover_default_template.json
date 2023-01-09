@@ -1,0 +1,122 @@
+{
+    "title_template": [
+        {
+            "font_icon": "https://funimg.pddpic.com/ae23a042-a947-44d3-b17b-e6c36328899e.png.slim.png",
+            "template_id": "font6",
+            "font_template": {
+                "placeholder_color": "#4DFFFFFF",
+                "text_color": "#FFFFFF",
+                "background_color": "#E02E24",
+                "font_size": 18,
+                "text_shadow_blur_radius": 0,
+                "text_corner_radius": 0
+            }
+        },
+        {
+            "font_icon": "https://funimg.pddpic.com/631633d7-4001-4cfe-9d62-d584a2c290d3.png.slim.png",
+            "template_id": "font9",
+            "font_template": {
+                "placeholder_color": "#4D000000",
+                "text_color": "#000000",
+                "background_color": "#FAD400",
+                "font_size": 18,
+                "text_shadow_blur_radius": 0,
+                "text_corner_radius": 0
+            }
+        },
+        {
+            "font_icon": "https://funimg.pddpic.com/8096846a-2549-4bef-9a94-a2afa83ef920.png.slim.png",
+            "template_id": "font8",
+            "font_template": {
+                "placeholder_color": "#4DFFFFFF",
+                "text_color": "#FFFFFF",
+                "background_color": "#E02E24",
+                "font_size": 18,
+                "text_corner_radius": 0,
+                "text_shadow_color": "#000000",
+                "text_shadow_blur_radius": 1,
+                "text_shadow_offset_x": 2,
+                "text_shadow_offset_y": 2
+            }
+        },
+        {
+            "font_icon": "https://funimg.pddpic.com/65a93192-8ac2-4a69-a7b0-3f2a93a5c566.png.slim.png",
+            "template_id": "font7",
+            "font_template": {
+                "placeholder_color": "#4D000000",
+                "text_color": "#000000",
+                "background_color": "#FAD400",
+                "font_size": 18,
+                "text_corner_radius": 0,
+                "text_shadow_color": "#FFFFFF",
+                "text_shadow_blur_radius": 1,
+                "text_shadow_offset_x": 2,
+                "text_shadow_offset_y": 2
+            }
+        },
+        {
+            "font_icon": "https://commfile.pddpic.com/galerie-go/live_client_lego_templates/pdd_vk_title_template_5.png",
+            "template_id": "template1",
+            "font_template": {
+                "placeholder_color": "#4DFFFFFF",
+                "text_color": "#FFFFFF",
+                "background_color": "#FF3D3D",
+                "font_size": 18,
+                "?text_shadow_blur_radius": 20,
+                "?text_shadow_offset_x": 2,
+                "?text_shadow_offset_y": 2,
+                "?text_shadow_color": "#FFD873",
+                "text_shadow_blur_radius": 0,
+                "text_corner_radius": 4
+            }
+        },
+        {
+            "font_icon": "https://commfile.pddpic.com/galerie-go/live_client_lego_templates/pdd_vk_title_template_1.png",
+            "template_id": "template2",
+            "font_template": {
+                "placeholder_color": "#4DFFFFFF",
+                "text_color": "#FFFFFF",
+                "background_color": "#7E36FF",
+                "font_size": 18,
+                "text_shadow_blur_radius": 0,
+                "text_corner_radius": 4
+            }
+        },
+        {
+            "font_icon": "https://commfile.pddpic.com/galerie-go/live_client_lego_templates/pdd_vk_title_template_2.png",
+            "template_id": "font3",
+            "font_template": {
+                "placeholder_color": "#4DFFFFFF",
+                "text_color": "#000000",
+                "background_color": "#FFCE00",
+                "font_size": 18,
+                "text_shadow_blur_radius": 0,
+                "text_corner_radius": 4
+            }
+        },
+        {
+            "font_icon": "https://commfile.pddpic.com/galerie-go/live_client_lego_templates/pdd_vk_title_template_3.png",
+            "template_id": "font4",
+            "font_template": {
+                "placeholder_color": "#4DFFFFFF",
+                "text_color": "#FFFFFF",
+                "background_color": "#65B77F",
+                "font_size": 18,
+                "text_shadow_blur_radius": 0,
+                "text_corner_radius": 4
+            }
+        },
+        {
+            "font_icon": "https://commfile.pddpic.com/galerie-go/live_client_lego_templates/pdd_vk_title_template_4.png",
+            "template_id": "font5",
+            "font_template": {
+                "placeholder_color": "#4DFFFFFF",
+                "text_color": "#4332A1",
+                "background_color": "#74ABFF",
+                "font_size": 18,
+                "text_shadow_blur_radius": 0,
+                "text_corner_radius": 4
+            }
+        }
+    ]
+}

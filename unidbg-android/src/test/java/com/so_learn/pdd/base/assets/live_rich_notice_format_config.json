@@ -1,0 +1,28 @@
+{
+  "live_enter_notice": {
+    "name": {
+      "font_color": "#FEC32B"
+    },
+    "content": {
+      "font_color": "#151516"
+    },
+    "background": {
+      "background_color": "#FFFFFF"
+    },
+    "duration": 5000,
+    "hasExtraSpaceAfterName": true
+  },
+  "live_welcome_notice": {
+    "name": {
+      "font_color": "#FEC32B"
+    },
+    "content": {
+      "font_color": "#151516"
+    },
+    "background": {
+      "background_color": "#FFFFFF"
+    },
+    "duration": 15000,
+    "hasExtraSpaceAfterName": false
+  }
+}
