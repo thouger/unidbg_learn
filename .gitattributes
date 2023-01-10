@@ -2,3 +2,4 @@
 D:/code/unidbg_learn/unidbg-android/src/test/java/com/so_learn/lession7/mt.apk filter=lfs diff=lfs merge=lfs -text
 D:/code/unidbg_learn/unidbg-android/src/test/java/com/so_learn/lession10/xc-8-38-2.apk filter=lfs diff=lfs merge=lfs -text
 unidbg-android/src/test/java/com/so_learn/lession7/mt.apk filter=lfs diff=lfs merge=lfs -text
+unidbg-android/src/test/java/com/so_learn/lession10/xc-8-38-2.apk filter=lfs diff=lfs merge=lfs -text
