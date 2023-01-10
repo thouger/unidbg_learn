@@ -1,4 +1,4 @@
-package com.so_learn.sougou;
+package com.so_learn.课时2;
 
 import com.github.unidbg.AndroidEmulator;
 import com.github.unidbg.Emulator;
