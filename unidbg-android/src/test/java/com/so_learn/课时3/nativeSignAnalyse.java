@@ -97,22 +97,22 @@ public class nativeSignAnalyse extends AbstractJni implements IOResolver {
     }
 
     public void ConsoleDebugger() {
-        emulator.attach().addBreakPoint(module.base+0x2FA0C);
+//        emulator.attach().addBreakPoint(module.base+0x37f76);
 
         // trace 结果来源（第一层）
-         emulator.traceWrite(0x402e7000,0x402e7000+122);
+//         emulator.traceWrite(0x402e7000,0x402e7000+122);
 
         // breakPoint 2f9ee位置，118个字符来自这里 （第二层）
 //        emulator.attach().addBreakPoint(module.base + 0x2f9ee);
 //    // breakpoint 37f3c，疑似魔改base64 (第三层)
 //        emulator.attach().addBreakPoint(module.base + 0x37f3c);
 //    // 寻找 base64输入数据的来源（不包括时间戳）（第四层）
-//        emulator.traceWrite(0x402e4009, 0x402e4052);
+        emulator.traceWrite(0x402e4000, 0x402e4088);
 //        emulator.traceWrite(0x402e4009, 0x402e4052, (emulator, address, size, value) -> {
 //            emulator.getUnwinder().unwind();
 //            return false;
 //        });
-//        emulator.traceWrite(0x402a10f0, 0x402a10f0 + 0x4a);
+        emulator.traceWrite(0x402a10f0, 0x402a10f0 + 0x4a);
 //        emulator.attach().addBreakPoint(module.base + 0x364be);
 //        emulator.attach().addBreakPoint(module.base + 0x3647c);
 
@@ -183,7 +183,7 @@ public class nativeSignAnalyse extends AbstractJni implements IOResolver {
     public static void main(String[] args) {
         nativeSignAnalyse demo = new nativeSignAnalyse();
         demo.ConsoleDebugger();
-//        demo.hook2f638yUnicorn();
+        demo.hook2f638yUnicorn();
 //        demo.hook363dcByUnicorn();
         demo.callInit();
         System.out.println(demo.getSign());
