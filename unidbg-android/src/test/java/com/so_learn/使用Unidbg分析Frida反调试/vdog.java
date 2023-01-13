@@ -15,6 +15,7 @@ import com.github.unidbg.linux.ARM32SyscallHandler;
 import com.github.unidbg.linux.android.*;
 import com.github.unidbg.linux.android.dvm.*;
 import com.github.unidbg.linux.file.ByteArrayFileIO;
+import com.github.unidbg.linux.file.DirectoryFileIO;
 import com.github.unidbg.linux.file.MapsFileIO;
 import com.github.unidbg.linux.file.SimpleFileIO;
 import com.github.unidbg.memory.Memory;
@@ -32,26 +33,11 @@ public class vdog extends AbstractJni implements IOResolver{
     private final VM vm;
     private final Module module;
 
-    private static class MyARMSyscallHandler extends ARM32SyscallHandler {
-        private MyARMSyscallHandler(SvcMemory svcMemory) {
-            super(svcMemory);
-        }
-        @Override
-        protected int fork(Emulator<?> emulator) {
-            return emulator.getPid();
-        }
-    }
-
     private vdog() {
         emulator = AndroidEmulatorBuilder.for32Bit()
+                .setRootDir(new File("target/rootfs"))
                 .addBackendFactory(new Unicorn2Factory(false))
                 .setProcessName("test").build();
-//        emulator = new AndroidARMEmulator("test",new File("target/rootfs"),Arrays.asList(new DynarmicFactory(true), new Unicorn2Factory(true))) {
-//            @Override
-//            protected UnixSyscallHandler<AndroidFileIO> createSyscallHandler(SvcMemory svcMemory) {
-//                return new vdog.MyARMSyscallHandler(svcMemory);
-//            }
-//        };
 
         emulator.getBackend().registerEmuCountHook(10000); // 设置执行多少条指令切换一次线程
         final Memory memory = emulator.getMemory();
@@ -74,9 +60,9 @@ public class vdog extends AbstractJni implements IOResolver{
                 case "ro.build.version.sdk":
                     return "23";
                     case "persist.sys.dalvik.vm.lib":
-                case "persist.sys.dalvik.vm.lib.2":
-                case "release_or_codename":
-                    return "";
+                    case "persist.sys.dalvik.vm.lib.2":
+                    case "release_or_codename":
+                        return "";
             }
             return "";
         });
@@ -104,13 +90,28 @@ public class vdog extends AbstractJni implements IOResolver{
     @Override
     public FileResult resolve(Emulator emulator, String pathname, int oflags) {
         final int attachPid = emulator.getPid();
-        System.out.println("pathName:"+pathname+" pid:"+attachPid);
-        if (("/proc/" + attachPid + "/cmdline").equals(pathname)) {
-            return FileResult.<AndroidFileIO>success(new ByteArrayFileIO(oflags, pathname, "com.sfexpress.merchant:v5chat".getBytes()));
-        }
-        if (("/proc/self/maps").equals(pathname)) {
-            return FileResult.success(new SimpleFileIO(oflags, new File("unidbg-android/src/test/java/com/so_learn/使用Unidbg分析Frida反调试/maps"), pathname));
-        }
+        System.out.println("--------------------pathName:"+pathname);
+//        if (("/proc/" + attachPid + "/cmdline").equals(pathname)) {
+//            return FileResult.<AndroidFileIO>success(new ByteArrayFileIO(oflags, pathname, "com.sfexpress.merchant".getBytes()));
+//        }
+//        if (("/proc/self/maps").equals(pathname)) {
+//            return FileResult.success(new SimpleFileIO(oflags, new File("unidbg-android/src/test/java/com/so_learn/使用Unidbg分析Frida反调试/maps"), pathname));
+//        }
+//        if (("/proc/" + attachPid + "/status").equals(pathname)) {
+//            return FileResult.success(new SimpleFileIO(oflags, new File("unidbg-android/src/test/java/com/so_learn/使用Unidbg分析Frida反调试/status"), pathname));
+//        }
+//        if (("/proc/" + attachPid + "/task").equals(pathname)||"/proc/self/task".equals(pathname)) {
+//            return FileResult.<AndroidFileIO>success(new DirectoryFileIO(oflags, pathname,
+//                    new DirectoryFileIO.DirectoryEntry(true, "unidbg-android/src/test/java/com/so_learn/使用Unidbg分析Frida反调试/task")));
+//        }
+//
+//        //不会补
+//        if (("/proc/self/fd").equals(pathname)||("/proc/self/fd/").equals(pathname)) {
+////            return FileResult.<AndroidFileIO>success(new DirectoryFileIO(oflags, "",
+////                    new DirectoryFileIO.DirectoryEntry(true, "unidbg-android/src/test/java/com/so_learn/使用Unidbg分析Frida反调试/fd")));
+//                    //            int fd = Integer.parseInt("unidbg-android/src/test/java/com/so_learn/使用Unidbg分析Frida反调试/fd");
+//            return FileResult.success(new SimpleFileIO(oflags, new File("unidbg-android/src/test/java/com/so_learn/使用Unidbg分析Frida反调试/fd/1"), pathname));
+//        }
         return null;
     }
 }

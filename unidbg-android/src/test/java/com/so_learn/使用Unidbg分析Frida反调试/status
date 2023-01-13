@@ -1,0 +1,42 @@
+Name:	xpress.merchant
+State:	S (sleeping)
+Tgid:	5417
+Pid:	5417
+PPid:	638
+TracerPid:	0
+Uid:	10180	10180	10180	10180
+Gid:	10180	10180	10180	10180
+Ngid:	0
+FDSize:	512
+Groups:	3001 3002 3003 9997 20180 50180 
+VmPeak:	 1662296 kB
+VmSize:	 1295876 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	  146820 kB
+VmRSS:	  144480 kB
+VmData:	  210992 kB
+VmStk:	    8192 kB
+VmExe:	      24 kB
+VmLib:	  155724 kB
+VmPTE:	    1108 kB
+VmSwap:	    1740 kB
+Threads:	69
+SigQ:	1/13898
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000001200
+SigIgn:	0000000000000001
+SigCgt:	00000006400084fc
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	0000000000000000
+CapAmb:	0000000000000000
+Seccomp:	2
+Cpus_allowed:	7
+Cpus_allowed_list:	0-2
+Mems_allowed:	1
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	65118
+nonvoluntary_ctxt_switches:	15699

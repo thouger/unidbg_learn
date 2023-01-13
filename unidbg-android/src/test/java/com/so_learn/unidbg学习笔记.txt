@@ -1,0 +1,700 @@
+1、context如何构造
+
+DvmObject<?> context = vm.resolveClass("android/content/Context").newObject(null);// context
+
+//或者
+DvmClass context = vm.resolveClass("android/content/Context"); 
+DvmClass ContextWrapper = vm.resolveClass("android/content/ContextWrapper", context); 
+DvmClass Application = vm.resolveClass("android/app/Application",ContextWrapper); 
+return Application.newObject(signature);
+
+//补环境的时候要注意
+@Override public DvmObject<?> callObjectMethodV(BaseVM vm, DvmObject<?> dvmObject, String signature, VaList vaList) {
+	switch (signature){ 
+	 case "android/app/ActivityThread- >getApplication()Landroid/app/Application;":{
+		DvmClass context = vm.resolveClass("android/content/Context"); 
+		DvmClass Application = vm.resolveClass("android/app/Application",context); 
+		return Application.newObject(signature); 
+		}
+	 case "android/content/Context- >getContentResolver()Landroid/content/ContentResolver;":{
+		return vm.resolveClass("android/content/ContentResolver").newObject(signature); 
+		} 
+	 }
+	return super.callObjectMethodV(vm, dvmObject, signature, vaList); 
+ }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+2、字符串类型如何构造，字节数组如何构造，对象数组如何构造，参数2的实例对象怎么传？
+
+传入Native的JAVA参数，除了八个基本类型外（byte、char、short、int、long、float、double、boolean），都必须vm.addLocalObject添加到局部引用中去。其他的对象类型一律要手动 addLocalObject。
+
+//字符串
+list.add(vm.addLocalObject(new StringObject(vm, "12345")));
+list.add(vm.addLocalObject(new StringObject(vm, "r0ysue")));
+
+//字节数组
+ByteArray plainText = new ByteArray(vm, "r0ysue".getBytes(StandardCharsets.UTF_8));
+list.add(vm.addLocalObject(plainText));
+
+//对象数组
+public static native Object[] main(int i,Object[] objarr);
+参数1是203
+
+参数2是一个对象数组
+
+
+9b69f861-e054-4bc4-9daf-d36ae205ed3e (String)
+GET /aggroup/homepage/display __xxxxx（byte数组形式）
+2 （int包装类）
+
+public String main203(){
+        List<Object> list = new ArrayList<>(10);
+        list.add(vm.getJNIEnv()); // 第一个参数是env
+        list.add(0); // 第二个参数，实例方法是jobject，静态方法是jclazz，直接填0，一般用不到。
+        list.add(203);
+        StringObject input2_1 = new StringObject(vm, "9b69f861-e054-4bc4-9daf-d36ae205ed3e");
+        ByteArray input2_2 = new ByteArray(vm, "GET /aggroup/homepage/display __r0ysue".getBytes(StandardCharsets.UTF_8));
+        DvmInteger input2_3 = DvmInteger.valueOf(vm, 2);
+        vm.addLocalObject(input2_1);
+        vm.addLocalObject(input2_2);
+        vm.addLocalObject(input2_3);
+        // 完整的参数2
+        list.add(vm.addLocalObject(new ArrayObject(input2_1, input2_2, input2_3)));
+        Number number = module.callFunction(emulator, 0x5a38d, list.toArray())[0];
+        return vm.getObject(number.intValue()).getValue().toString();
+    };
+
+//参数2的实例对象怎么传
+需要注意的是，以往我一直直接把参数2填0，这是偷懒但有风险的做法，还是建议老老实实初始化类或对象，传hashCode进去，代码如下
+public DvmClass cNative;
+cNative = vm.resolveClass("com/roysue/test623/MainActivity");
+DvmObject<?> cnative = cNative.newObject(null);
+
+List<Object> list = new ArrayList<>(10);
+list.add(vm.getJNIEnv()); // 第一个参数是env
+list.add(cnative.hashCode()); // 第二个参数，实例方法是jobject，静态方法是jclazz，直接填0这里是不行的，此样本参数2被使用了
+
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+3、代码是Thumb模式，调用的时候别忘了+1，Thumb的+1只在运行和Hook时需要考虑，打Patch和下断点不用
+
+Number number = module.callFunction(emulator, 0x1E7C + 1, list.toArray())[0];
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+4、代码patch的两种方法
+public void patchVerify(){
+    int patchCode = 0x4FF00100; //mov r0,1  相对应的opcode就是4FF00100
+    emulator.getMemory().pointer(module.base + 0x1E86).setInt(0,patchCode);
+}
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+public void patchVerify1(){
+        Pointer pointer = UnidbgPointer.pointer(emulator, module.base + 0x1E86);
+        assert pointer != null;
+        byte[] code = pointer.getByteArray(0, 4);
+        if (!Arrays.equals(code, new byte[]{ (byte)0xFF, (byte) 0xF7, (byte) 0xEB, (byte) 0xFE })) { // BL sub_1C60
+            throw new IllegalStateException(Inspector.inspectString(code, "patch32 code=" + Arrays.toString(code)));
+        }
+        try (Keystone keystone = new Keystone(KeystoneArchitecture.Arm, KeystoneMode.ArmThumb)) {
+            KeystoneEncoded encoded = keystone.assemble("mov r0,1");
+            byte[] patch = encoded.getMachineCode();
+            if (patch.length != code.length) {
+                throw new IllegalStateException(Inspector.inspectString(patch, "patch32 length=" + patch.length));
+            }
+            pointer.write(0, patch, 0, patch.length);
+        }
+    };
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+
+5、unidbg各种hook例子
+hookZz例子
+ public void HookMDStringold(){
+        // 加载HookZz
+        IHookZz hookZz = HookZz.getInstance(emulator);
+
+        hookZz.wrap(module.base + 0x1BD0 + 1, new WrapCallback<HookZzArm32RegisterContext>() { // inline wrap导出函数
+            @Override
+            // 类似于 frida onEnter
+            public void preCall(Emulator<?> emulator, HookZzArm32RegisterContext ctx, HookEntryInfo info) {
+                // 类似于Frida args[0]
+                Pointer input = ctx.getPointerArg(0);
+                System.out.println("input:" + input.getString(0));
+            };
+
+            @Override
+            // 类似于 frida onLeave
+            public void postCall(Emulator<?> emulator, HookZzArm32RegisterContext ctx, HookEntryInfo info) {
+                Pointer result = ctx.getPointerArg(0);
+                System.out.println("input:" + result.getString(0));
+            }
+        });
+    }
+	
+	
+	
+Inline hook例子
+public void hook_315B0(){
+        IHookZz hookZz = HookZz.getInstance(emulator);
+        hookZz.enable_arm_arm64_b_branch();
+
+        hookZz.instrument(module.base + 0x315B0 + 1, new InstrumentCallback<Arm32RegisterContext>() {
+            @Override
+            public void dbiCall(Emulator<?> emulator, Arm32RegisterContext ctx, HookEntryInfo info) { // 通过base+offset inline wrap内部函数，在IDA看到为sub_xxx那些
+                System.out.println("R2:"+ctx.getR2Long());
+            }
+        });
+
+    }
+	
+	
+Unidbg自带API hook
+public void hookByUnicorn(){
+	emulator.getBackend().hook_add_new(new CodeHook() {
+		@Override
+		public void hook(Backend backend, long address, int size, Object user) {
+			if (address == module.base + 0x9D24){
+				System.out.println("Hook By Unicorn");
+				RegisterContext ctx = emulator.getContext();
+				Pointer input1 = ctx.getPointerArg(0);
+				Pointer input2 = ctx.getPointerArg(1);
+				Pointer input3 = ctx.getPointerArg(2);
+				// getString的参数i代表index,即input[i:]
+				System.out.println("参数1："+input1.getString(0));
+				System.out.println("参数2："+input2.getString(0));
+				System.out.println("参数3："+input3.getString(0));
+				buffer = ctx.getPointerArg(3);
+			}
+			if(address == (module.base + 0x9d28)){
+				Inspector.inspect(buffer.getByteArray(0,0x100), "Unicorn hook EncryptWallEncode");
+			}
+		}
+
+		@Override
+		public void onAttach(Unicorn.UnHook unHook) {
+			System.out.println("onAttach");
+		}
+
+		@Override
+		public void detach() {
+			System.out.println("detach");
+		}
+	},module.base + 0x9D24,module.base + 0x9D28,null);
+}
+
+Unidbg Console Debugger
+public void HookByConsoleDebugger(){
+	Debugger debugger = emulator.attach();
+	debugger.addBreakPoint(module.base+0x9d24);
+	debugger.addBreakPoint(module.base+0x9d28);
+}
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+6、DalvikModule dm = vm.loadLibrary(new File("unidbg-android\\src\\test\\java\\com\\zuiyou\\libnet_crypto.so"), true); // 加载so到虚拟内存
+
+如果在加载so到虚拟内存的步骤中，参数二设为false(即不执行init相关函数)，会出现乱码。其实其中的道理并不复杂，甚至可以说很简单——SO样本做了字符串的混淆或加密，以此来对抗分析人员，但字符串总是要解密的，不然怎么用呢？这个解密一般发生在Init array节或者JNI OnLoad中，又或者是该字符串使用前的任何一个时机。
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+7、各种补环境
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补Context
+@Override
+    public DvmObject<?> callStaticObjectMethodV(BaseVM vm, DvmClass dvmClass, String signature, VaList vaList) {
+        switch (signature) {
+            case "com/izuiyou/common/base/BaseApplication->getAppContext()Landroid/content/Context;":
+                return vm.resolveClass("android/content/Context").newObject(null);
+			case "java/util/UUID->randomUUID()Ljava/util/UUID;":
+                return dvmClass.newObject(UUID.randomUUID());
+            
+        }
+        return super.callStaticObjectMethodV(vm, dvmClass, signature, vaList);
+    }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+补一个空类
+    @Override
+    public DvmObject<?> callObjectMethodV(BaseVM vm, DvmObject<?> dvmObject, String signature, VaList vaList) {
+        switch (signature) {
+            case "android/content/Context->getClass()Ljava/lang/Class;":{
+                return dvmObject.getObjectType();
+            }
+        }
+        return super.callObjectMethodV(vm, dvmObject, signature, vaList);
+    };
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补具体类名
+ @Override
+    public DvmObject<?> callObjectMethodV(BaseVM vm, DvmObject<?> dvmObject, String signature, VaList vaList) {
+        switch (signature) {
+            case "android/content/Context->getClass()Ljava/lang/Class;":{
+                return dvmObject.getObjectType();
+            }
+            case "java/lang/Class->getSimpleName()Ljava/lang/String;":{
+                return new StringObject(vm, "AppController");
+            }
+        }
+        return super.callObjectMethodV(vm, dvmObject, signature, vaList);
+    };
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补文件路径
+ @Override
+    public DvmObject<?> callObjectMethodV(BaseVM vm, DvmObject<?> dvmObject, String signature, VaList vaList) {
+        switch (signature) {
+            case "android/content/Context->getClass()Ljava/lang/Class;":{
+                return dvmObject.getObjectType();
+            }
+            case "java/lang/Class->getSimpleName()Ljava/lang/String;":{
+                return new StringObject(vm, "AppController");
+            }
+            case "android/content/Context->getFilesDir()Ljava/io/File;":
+            case "java/lang/String->getAbsolutePath()Ljava/lang/String;": {
+                return new StringObject(vm, "/data/user/0/cn.xiaochuankeji.tieba/files");
+            }
+        }
+        return super.callObjectMethodV(vm, dvmObject, signature, vaList);
+    };
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+检测是否有调试
+ @Override
+    public boolean callStaticBooleanMethodV(BaseVM vm, DvmClass dvmClass, String signature, VaList vaList) {
+        switch (signature){
+            case "android/os/Debug->isDebuggerConnected()Z":{
+                return false;
+            }
+
+        }
+        throw new UnsupportedOperationException(signature);
+    }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+使用Unidbg的API返回PID
+  @Override
+    public int callStaticIntMethodV(BaseVM vm, DvmClass dvmClass, String signature, VaList vaList) {
+        switch (signature){
+            case "android/os/Process->myPid()I":{
+                return emulator.getPid();
+            }
+
+        }
+        throw new UnsupportedOperationException(signature);
+    }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+判断map是否为空
+ @Override
+    public boolean callBooleanMethod(BaseVM vm, DvmObject<?> dvmObject, String signature, VarArg varArg) {
+        if ("java/util/Map->isEmpty()Z".equals(signature)) {
+            TreeMap<String, String> treeMap = (TreeMap<String, String>)dvmObject.getValue();
+            return treeMap.isEmpty();
+        }
+
+        return super.callBooleanMethod(vm, dvmObject, signature, varArg);
+    }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补map.get
+ @Override
+    public DvmObject<?> callObjectMethod(BaseVM vm, DvmObject<?> dvmObject, String signature, VarArg varArg) 		{
+        switch (signature) {
+            case "java/util/Map->get(Ljava/lang/Object;)Ljava/lang/Object;":
+                StringObject keyobject = varArg.getObjectArg(0);
+                String key = keyobject.getValue();
+                TreeMap<String, String> treeMap = (TreeMap<String, String>)dvmObject.getValue();
+                String value = treeMap.get(key);
+                return new StringObject(vm, value);
+        }
+
+        return super.callObjectMethod(vm, dvmObject, signature, varArg);
+		}
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补SignedQuery类的init，也就是初始化一个SignedQuery对象
+    @Override
+    public DvmObject<?> newObject(BaseVM vm, DvmClass dvmClass, String signature, VarArg varArg) {
+        switch (signature) {
+            case "com/bilibili/nativelibrary/SignedQuery-><init>(Ljava/lang/String;Ljava/lang/String;)V":
+                StringObject stringObject1 = varArg.getObjectArg(0);
+                StringObject stringObject2 = varArg.getObjectArg(1);
+                String str1 = stringObject1.getValue();
+                String str2 = stringObject2.getValue();
+                return vm.resolveClass("com/bilibili/nativelibrary/SignedQuery").newObject(new SignedQuery(str1, str2));
+        }
+
+        return super.newObject(vm, dvmClass, signature, varArg);
+    }
+
+	//因为用jadx查看SignedQuery类的代码，有俩成员以及构造函数，所以根据他的成员和构造函数，newObject一个SignedQuery类，搞一个简化版的内部类给它用
+    public class SignedQuery {
+        public final String a;
+        public final String b;
+
+        public SignedQuery(String str, String str2) {
+            this.a = str;
+            this.b = str2;
+        }
+    };
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补文件访问
+当样本做文件访问时，Unidbg重定向到本机的某个位置，进入 src/main/java/com/github/unidbg/file/BaseFileSystem.java
+在构造函数第三行加上 System.out.print("virtual path:" + rootDir); 打印虚拟路径，接下来我们按照要求，在报错提示目录下新建对应文件夹，并把我们的apk复制进去，改名成报错提示需要的apk。
+    public BaseFileSystem(Emulator<T> emulator, File rootDir) {
+        this.emulator = emulator;
+        this.rootDir = rootDir;
+        System.out.print("virtual path:" + rootDir);
+
+创建模拟器实例的时候，加上setRootDir(new File("target/rootfs")，运行代码的时候会自动创建生成target/rootfs目录
+    emulator = AndroidEmulatorBuilder.for32Bit().setRootDir(new File("target/rootfs")).setProcessName("com.xunmeng.pinduoduo").build();
+
+除此之外，也可以通过代码的方式进行操作
+
+我们的类实现文件重定向的接口即可，只需要三个步骤，如下：
+
+// 第一步 实现IOResolve
+public class NBridge extends AbstractJni implements IOResolver {
+    private final AndroidEmulator emulator;
+    private final VM vm;
+    private final Module module;
+
+
+    NBridge(){
+        emulator = AndroidEmulatorBuilder.for32Bit().setProcessName("com.meituan").build();
+        final Memory memory = emulator.getMemory(); // 模拟器的内存操作接口
+        memory.setLibraryResolver(new AndroidResolver(23)); // 设置系统类库解析
+
+        vm = emulator.createDalvikVM(new File("C:\\Users\\pr0214\\Desktop\\DTA\\unidbg\\versions\\unidbg-2021-5-17\\unidbg-master\\unidbg-android\\src\\test\\java\\com\\lession7\\mt.apk")); // 创建Android虚拟机
+        // 第二步 绑定IO重定向接口
+        emulator.getSyscallHandler().addIOResolver(this);
+        vm.setVerbose(true); // 设置是否打印Jni调用细节
+        DalvikModule dm = vm.loadLibrary(new File("C:\\Users\\pr0214\\Desktop\\DTA\\unidbg\\versions\\unidbg-2021-5-17\\unidbg-master\\unidbg-android\\src\\test\\java\\com\\lession7\\libmtguard.so"), true);
+
+        module = dm.getModule(); //
+
+        vm.setJni(this);
+        dm.callJNI_OnLoad(emulator);
+    }
+
+    // 第三步
+    @Override
+    public FileResult resolve(Emulator emulator, String pathname, int oflags) {
+        if (("/data/app/com.sankuai.meituan-TEfTAIBttUmUzuVbwRK1DQ==/base.apk").equals(pathname)) {
+            // 填入想要重定位的文件
+            return FileResult.success(new SimpleFileIO(oflags, new File("unidbg-android\\src\\test\\java\\com\\lession10\\mt.apk"), pathname));
+        }
+        return null;
+    }
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补文件2
+	@Override public FileResult resolve(Emulator emulator, String pathname, int oflags) { 
+		if (("proc/"+emulator.getPid()+"/cmdline").equals(pathname)) { 
+			return FileResult.success(new ByteArrayFileIO(oflags, pathname, "ctrip.android.view".getBytes())); 
+		}
+
+		return null; 
+	}
+	
+除此之外也可以像上面一样新建一个文件，传入文件
+return FileResult.success(new SimpleFileIO(oflags, new File("D:\\unidbg-teach\\unidbg- android\\src\\test\\java\\com\\lession1\\cmdline"), pathname));
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+补签名
+@Override
+    public int callIntMethod(BaseVM vm, DvmObject<?> dvmObject, String signature, VarArg varArg) {
+        switch (signature) {
+            case "android/content/pm/Signature->hashCode()I":
+                if (dvmObject instanceof Signature) {
+                    Signature sig = (Signature) dvmObject;
+                    return sig.getHashCode();
+                }
+        }
+        return super.callIntMethod(vm, dvmObject, signature, varArg);
+    }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+初始化异常类
+@Override public DvmObject<?> newObject(BaseVM vm, DvmClass dvmClass, String signature, VarArg varArg) { 
+	switch (signature){ 
+		case "java/lang/Throwable-><init>()V":{ 
+			return vm.resolveClass("java/lang/Throwable").newObject(new Throwable()); 
+		} 
+	}
+	
+	return super.newObject(vm, dvmClass, signature, varArg); 
+}
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+
+8、打印地址所指向的内存，其效果类似于frida中hexdump，push保存，在后面再pop取出。
+
+ public void hook65540(){
+        // 加载HookZz
+        IHookZz hookZz = HookZz.getInstance(emulator);
+
+        hookZz.wrap(module.base + 0x65540 + 1, new WrapCallback<HookZzArm32RegisterContext>() { // inline wrap导出函数
+            @Override
+            // 类似于 frida onEnter
+            public void preCall(Emulator<?> emulator, HookZzArm32RegisterContext ctx, HookEntryInfo info) {
+                // 类似于Frida args[0]
+                Inspector.inspect(ctx.getR0Pointer().getByteArray(0, 0x10), "Arg1");
+                System.out.println(ctx.getR1Long());
+                Inspector.inspect(ctx.getR2Pointer().getByteArray(0, 0x10), "Arg3");
+				
+				ctx.push(ctx.getR2Pointer()); //push保存
+            };
+
+            @Override
+            // 类似于 frida onLeave
+            public void postCall(Emulator<?> emulator, HookZzArm32RegisterContext ctx, HookEntryInfo info) {
+				// pop 取出
+                Pointer output = ctx.pop();
+                Inspector.inspect(output.getByteArray(0, 0x10), "Arg3 after function");
+            }
+        });
+    }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+9、如何主动调用一个Native函数
+
+public void callMd5(){
+        List<Object> list = new ArrayList<>(10);
+
+        // arg1
+        String input = "r0ysue";
+        // malloc memory
+        MemoryBlock memoryBlock1 = emulator.getMemory().malloc(16, false);
+        // get memory pointer
+        UnidbgPointer input_ptr=memoryBlock1.getPointer();
+        // write plainText on it
+        input_ptr.write(input.getBytes(StandardCharsets.UTF_8));
+
+        // arg2
+        int input_length = input.length();
+
+        // arg3 -- buffer
+        MemoryBlock memoryBlock2 = emulator.getMemory().malloc(16, false);
+        UnidbgPointer output_buffer=memoryBlock2.getPointer();
+
+        // 填入参入
+        list.add(input_ptr);
+        list.add(input_length);
+        list.add(output_buffer);
+        // run
+        module.callFunction(emulator, 0x65540 + 1, list.toArray());
+
+        // print arg3
+        Inspector.inspect(output_buffer.getByteArray(0, 0x10), "output");
+    };
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————	
+	
+10、unidbg下断点
+普通断点
+emulator.attach().addBreakPoint(module.base + 0x3161E);
+
+内存写入断点
+emulator.traceWrite(module.base + 0x3A0C0,module.base + 0x3A0C0);
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+11、unidbg traceCode
+emulator.traceCode(module.base, module.base + module.size);
+
+//traceCode保存到文件
+String traceFile = "unidbg-android\\src\\test\\java\\com\\lession5\\qxstrace.txt";
+PrintStream traceStream = new PrintStream(new FileOutputStream(traceFile), true);
+emulator.traceCode(module.base, module.base+module.size).setRedirect(traceStream);
+
+
+//修改unidbg源码，保存关键的寄存器值信息
+找到代码文件 src/main/java/com/github/unidbg/arm/AbstractARMEmulator.java
+
+//添加值显示
+private void printAssemble(PrintStream out, Capstone.CsInsn[] insns, long address, boolean thumb) {
+    StringBuilder sb = new StringBuilder();
+    for (Capstone.CsInsn ins : insns) {
+        sb.append("### Trace Instruction ");
+        sb.append(ARM.assembleDetail(this, ins, address, thumb));
+        // 打印每条汇编指令里参与运算的寄存器的值
+        Set<Integer> regset = new HashSet<Integer>();
+
+        Arm.OpInfo opInfo = (Arm.OpInfo) ins.operands;
+        for(int i = 0; i<opInfo.op.length; i++){
+            regset.add(opInfo.op[i].value.reg);
+        }
+
+        String RegChange = ARM.SaveRegs(this, regset);
+        sb.append(RegChange);
+        sb.append('\n');
+        address += ins.size;
+    }
+    out.print(sb);
+}
+
+src/main/java/com/github/unidbg/arm/ARM.java 中，新建SaveRegs方法，实际上就是showregs的代码，只不过从print改成return回来而已。
+
+public static String SaveRegs(Emulator<?> emulator, Set<Integer> regs) {
+        Backend backend = emulator.getBackend();
+        StringBuilder builder = new StringBuilder();
+        builder.append(">>>");
+        Iterator it = regs.iterator();
+        while(it.hasNext()) {
+            int reg = (int) it.next();
+            Number number;
+            int value;
+            switch (reg) {
+                case ArmConst.UC_ARM_REG_R0:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r0=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R1:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r1=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R2:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r2=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R3:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r3=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R4:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r4=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R5:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r5=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R6:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r6=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R7:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r7=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R8:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " r8=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R9: // UC_ARM_REG_SB
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " sb=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_R10: // UC_ARM_REG_SL
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " sl=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_FP:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " fp=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_IP:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " ip=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_SP:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " SP=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_LR:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " LR=0x%x", value));
+                    break;
+                case ArmConst.UC_ARM_REG_PC:
+                    number = backend.reg_read(reg);
+                    value = number.intValue();
+                    builder.append(String.format(Locale.US, " PC=0x%x", value));
+                    break;
+            }
+        }
+        return builder.toString();
+    }
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+12、开启所有的日志
+Logger.getLogger("com.github.unidbg.linux.ARM32SyscallHandler").setLevel(Level.DEBUG);
+Logger.getLogger("com.github.unidbg.unix.UnixSyscallHandler").setLevel(Level.DEBUG);
+Logger.getLogger("com.github.unidbg.AbstractEmulator").setLevel(Level.DEBUG);
+Logger.getLogger("com.github.unidbg.linux.android.dvm.DalvikVM").setLevel(Level.DEBUG);
+Logger.getLogger("com.github.unidbg.linux.android.dvm.BaseVM").setLevel(Level.DEBUG);
+Logger.getLogger("com.github.unidbg.linux.android.dvm").setLevel(Level.DEBUG);
+
+所需要的头文件
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+13、注册libAndroid.so虚拟模块
+new AndroidModule(emulator,vm).register(memory);
+
+只用这一句即可，需要注意，一定要在样本SO加载前加载它(也就是vm.loadLibrary之前)，道理也很简单，系统SO肯定比用户SO加载早鸭。
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+14、console debugger支持如下指令
+
+c: continue
+n: step over
+bt: back trace
+
+st hex: search stack
+shw hex: search writable heap
+shr hex: search readable heap
+shx hex: search executable heap
+
+nb: break at next block
+s|si: step into
+s[decimal]: execute specified amount instruction
+s(blx): execute util BLX mnemonic, low performance
+
+m(op) [size]: show memory, default size is 0x70, size may hex or decimal
+mr0-mr7, mfp, mip, msp [size]: show memory of specified register
+m(address) [size]: show memory of specified address, address must start with 0x
+
+wr0-wr7, wfp, wip, wsp : write specified register
+wb(address), ws(address), wi(address) : write (byte, short, integer) memory of specified address, address must start with 0x
+wx(address) : write bytes to memory at specified address, address must start with 0x
+
+b(address): add temporarily breakpoint, address must start with 0x, can be module offset
+b: add breakpoint of register PC
+r: remove breakpoint of register PC
+blr: add temporarily breakpoint of register LR
+
+p (assembly): patch assembly at PC address
+where: show java stack trace
+
+trace [begin end]: Set trace instructions
+traceRead [begin end]: Set trace memory read
+traceWrite [begin end]: Set trace memory write
+vm: view loaded modules
+vbs: view breakpoints
+d|dis: show disassemble
+d(0x): show disassemble at specify address
+stop: stop emulation
+run [arg]: run test
+cc size: convert asm from 0x40001ddc - 0x40001ddc + size bytes to c function
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+15、非法JNI Verision的错误
+千万不要先管它，非法JNI Verision的错误往往代表JNI OnLoad的总体执行情况不符合预期，它是
+JNIOnLoad的最终结果，我们应该在修复完其他错误后看它是否存在。
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+16、如何固定PID？
+修改src/main/java/com/github/unidbg/AbstractEmulator.java 中的如下位置，使PID固定，因为PID不停变动可能会影响后续分析，但这不是必须的操作。
+this.pid = Integer.parseInt(pid);
+修改为
+this.pid = 23638
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

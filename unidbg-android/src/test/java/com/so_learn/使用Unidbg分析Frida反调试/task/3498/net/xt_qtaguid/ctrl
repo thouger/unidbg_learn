@@ -1,0 +1,3 @@
+sock=0000000000000000 tag=0x100004070000277b (uid=10107) pid=635 f_count=2
+sock=0000000000000000 tag=0xffffff40000003e8 (uid=1000) pid=635 f_count=3
+events: sockets_tagged=9618 sockets_untagged=9616 counter_set_changes=1363 delete_cmds=1 iface_events=1373 match_calls=4481660 match_calls_prepost=1215536 match_found_sk=2729512 match_found_sk_in_ct=49988 match_found_no_sk_in_ct=486624 match_no_sk=486624 match_no_sk_gid=0

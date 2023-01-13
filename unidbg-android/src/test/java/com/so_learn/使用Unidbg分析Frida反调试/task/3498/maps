@@ -1,0 +1,111 @@
+56f6994000-56f69f6000 r-xp 00000000 103:12 1102                          /system/bin/toybox
+56f6a10000-56f6a14000 r--p 0006c000 103:12 1102                          /system/bin/toybox
+56f6a14000-56f6a16000 rw-p 00070000 103:12 1102                          /system/bin/toybox
+56f6a16000-56f6a1a000 rw-p 00000000 00:00 0 
+79cd800000-79cdc00000 rw-p 00000000 00:00 0                              [anon:libc_malloc]
+79cdc8e000-79cdc91000 r-xp 00000000 103:12 1496                          /system/lib64/libnetd_client.so
+79cdc91000-79cdcad000 ---p 00000000 00:00 0 
+79cdcad000-79cdcae000 r--p 0000f000 103:12 1496                          /system/lib64/libnetd_client.so
+79cdcae000-79cdcaf000 rw-p 00010000 103:12 1496                          /system/lib64/libnetd_client.so
+79cdcc2000-79cdce2000 r-xp 00000000 103:12 1838                          /system/lib64/libpcre2.so
+79cdce2000-79cdcf1000 ---p 00000000 00:00 0 
+79cdcf1000-79cdcf2000 r--p 0001f000 103:12 1838                          /system/lib64/libpcre2.so
+79cdcf2000-79cdcf3000 rw-p 00020000 103:12 1838                          /system/lib64/libpcre2.so
+79cdd09000-79cdd1a000 r-xp 00000000 103:12 1782                          /system/lib64/libcutils.so
+79cdd1a000-79cdd37000 ---p 00000000 00:00 0 
+79cdd37000-79cdd39000 r--p 0001e000 103:12 1782                          /system/lib64/libcutils.so
+79cdd39000-79cdd3a000 rw-p 00020000 103:12 1782                          /system/lib64/libcutils.so
+79cdd40000-79cde17000 r-xp 00000000 103:12 1602                          /system/lib64/libc.so
+79cde17000-79cde2a000 ---p 00000000 00:00 0 
+79cde2a000-79cde30000 r--p 000da000 103:12 1602                          /system/lib64/libc.so
+79cde30000-79cde32000 rw-p 000e0000 103:12 1602                          /system/lib64/libc.so
+79cde32000-79cde33000 rw-p 00000000 00:00 0                              [anon:.bss]
+79cde33000-79cde34000 r--p 00000000 00:00 0                              [anon:.bss]
+79cde34000-79cde3c000 rw-p 00000000 00:00 0                              [anon:.bss]
+79cde44000-79cdf4f000 r-xp 00000000 103:12 1473                          /system/lib64/libcrypto.so
+79cdf4f000-79cdf63000 ---p 00000000 00:00 0 
+79cdf63000-79cdf74000 r--p 0010f000 103:12 1473                          /system/lib64/libcrypto.so
+79cdf74000-79cdf75000 rw-p 00120000 103:12 1473                          /system/lib64/libcrypto.so
+79cdf75000-79cdf76000 rw-p 00000000 00:00 0                              [anon:.bss]
+79cdf85000-79ce053000 r-xp 00000000 103:12 1360                          /system/lib64/libc++.so
+79ce053000-79ce06e000 ---p 00000000 00:00 0 
+79ce06e000-79ce078000 r--p 000d6000 103:12 1360                          /system/lib64/libc++.so
+79ce078000-79ce079000 rw-p 000e0000 103:12 1360                          /system/lib64/libc++.so
+79ce079000-79ce07c000 rw-p 00000000 00:00 0                              [anon:.bss]
+79ce083000-79ce09a000 r-xp 00000000 103:12 1833                          /system/lib64/liblog.so
+79ce09a000-79ce0b2000 ---p 00000000 00:00 0 
+79ce0b2000-79ce0b3000 r--p 0001f000 103:12 1833                          /system/lib64/liblog.so
+79ce0b3000-79ce0b4000 rw-p 00020000 103:12 1833                          /system/lib64/liblog.so
+79ce0dd000-79ce114000 r-xp 00000000 103:12 1582                          /system/lib64/libm.so
+79ce114000-79ce12c000 ---p 00000000 00:00 0 
+79ce12c000-79ce12d000 r--p 0003f000 103:12 1582                          /system/lib64/libm.so
+79ce12d000-79ce12e000 rw-p 00040000 103:12 1582                          /system/lib64/libm.so
+79ce14b000-79ce162000 r-xp 00000000 103:12 1740                          /system/lib64/libz.so
+79ce162000-79ce17a000 ---p 00000000 00:00 0 
+79ce17a000-79ce17b000 r--p 0001f000 103:12 1740                          /system/lib64/libz.so
+79ce17b000-79ce17c000 rw-p 00020000 103:12 1740                          /system/lib64/libz.so
+79ce18e000-79ce1a4000 r-xp 00000000 103:12 1733                          /system/lib64/libselinux.so
+79ce1a4000-79ce1bd000 ---p 00000000 00:00 0 
+79ce1bd000-79ce1be000 r--p 0001f000 103:12 1733                          /system/lib64/libselinux.so
+79ce1be000-79ce1bf000 rw-p 00020000 103:12 1733                          /system/lib64/libselinux.so
+79ce1bf000-79ce1c0000 rw-p 00000000 00:00 0                              [anon:.bss]
+79ce1c0000-79ce1c2000 r-xp 00000000 103:12 1694                          /system/lib64/libdl.so
+79ce1c2000-79ce1df000 ---p 00000000 00:00 0 
+79ce1df000-79ce1e0000 r--p 0000f000 103:12 1694                          /system/lib64/libdl.so
+79ce1e0000-79ce1e1000 rw-p 00000000 00:00 0                              [anon:.bss]
+79ce20a000-79ce20d000 r-xp 00000000 103:12 1413                          /system/lib64/libpackagelistparser.so
+79ce20d000-79ce229000 ---p 00000000 00:00 0 
+79ce229000-79ce22a000 r--p 0000f000 103:12 1413                          /system/lib64/libpackagelistparser.so
+79ce22a000-79ce22b000 rw-p 00010000 103:12 1413                          /system/lib64/libpackagelistparser.so
+79ce258000-79ce259000 rw-p 00000000 00:00 0                              [anon:linker_alloc]
+79ce25e000-79ce25f000 rw-p 00000000 00:00 0                              [anon:linker_alloc_vector]
+79ce282000-79ce2a2000 r--s 00000000 00:0e 18848                          /dev/__properties__/u:object_r:default_prop:s0
+79ce2a2000-79ce2a3000 r--p 00000000 00:00 0                              [anon:linker_alloc]
+79ce2ac000-79ce2ad000 r--p 00000000 00:00 0                              [anon:atexit handlers]
+79ce2ad000-79ce2cd000 r--s 00000000 00:0e 18901                          /dev/__properties__/properties_serial
+79ce2cd000-79ce2ce000 rw-p 00000000 00:00 0                              [anon:System property context nodes]
+79ce2ce000-79ce2d1000 r--s 00000000 00:0e 18820                          /dev/__properties__/property_info
+79ce2d1000-79ce2d2000 rw-p 00000000 00:00 0                              [anon:linker_alloc]
+79ce2d2000-79ce2d3000 rw-p 00000000 00:00 0                              [anon:linker_alloc_vector]
+79ce2d3000-79ce2d5000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce2d5000-79ce2d6000 rw-p 00000000 00:00 0                              [anon:arc4random data]
+79ce2d6000-79ce2d7000 r--p 00000000 00:00 0                              [anon:linker_alloc]
+79ce2d7000-79ce2d8000 rw-p 00000000 00:00 0                              [anon:linker_alloc_vector]
+79ce2d8000-79ce2db000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce2db000-79ce2dc000 rw-p 00000000 00:00 0                              [anon:linker_alloc_vector]
+79ce2dc000-79ce2de000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce2de000-79ce2df000 rw-p 00000000 00:00 0                              [anon:linker_alloc_vector]
+79ce2df000-79ce2e1000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce2e1000-79ce301000 r--s 00000000 00:0e 18848                          /dev/__properties__/u:object_r:default_prop:s0
+79ce301000-79ce302000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce302000-79ce303000 r--p 00000000 00:00 0                              [anon:linker_alloc]
+79ce303000-79ce304000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce304000-79ce305000 r--p 00000000 00:00 0                              [anon:linker_alloc]
+79ce305000-79ce325000 r--s 00000000 00:0e 18846                          /dev/__properties__/u:object_r:debug_prop:s0
+79ce325000-79ce345000 r--s 00000000 00:0e 18901                          /dev/__properties__/properties_serial
+79ce345000-79ce470000 r-xp 00000000 103:12 1113                          /system/bin/linker64
+79ce470000-79ce471000 ---p 00000000 00:00 0 
+79ce471000-79ce472000 rw-p 00000000 00:00 0 
+79ce472000-79ce473000 ---p 00000000 00:00 0 
+79ce473000-79ce474000 rw-p 00000000 00:00 0                              [anon:System property context nodes]
+79ce474000-79ce477000 r--s 00000000 00:0e 18820                          /dev/__properties__/property_info
+79ce477000-79ce478000 r--p 00000000 00:00 0                              [anon:linker_alloc]
+79ce478000-79ce479000 rw-p 00000000 00:00 0                              [anon:linker_alloc_vector]
+79ce479000-79ce47a000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce47a000-79ce47b000 rw-p 00000000 00:00 0                              [anon:linker_alloc_vector]
+79ce47b000-79ce47c000 rw-p 00000000 00:00 0                              [anon:linker_alloc_small_objects]
+79ce47c000-79ce47d000 r--p 00000000 00:00 0                              [anon:atexit handlers]
+79ce47d000-79ce47e000 ---p 00000000 00:00 0 
+79ce47e000-79ce482000 rw-p 00000000 00:00 0                              [anon:thread signal stack]
+79ce482000-79ce483000 rw-p 00000000 00:00 0                              [anon:arc4random data]
+79ce483000-79ce484000 ---p 00000000 00:00 0 
+79ce484000-79ce487000 rw-p 00000000 00:00 0 
+79ce487000-79ce488000 ---p 00000000 00:00 0 
+79ce488000-79ce489000 r--p 00000000 00:00 0                              [vvar]
+79ce489000-79ce48a000 r-xp 00000000 00:00 0                              [vdso]
+79ce48a000-79ce495000 r--p 00135000 103:12 1113                          /system/bin/linker64
+79ce495000-79ce496000 rw-p 00140000 103:12 1113                          /system/bin/linker64
+79ce496000-79ce499000 rw-p 00000000 00:00 0 
+79ce499000-79ce49a000 r--p 00000000 00:00 0 
+79ce49a000-79ce4a1000 rw-p 00000000 00:00 0 
+7febd16000-7febd37000 rw-p 00000000 00:00 0                              [stack]
