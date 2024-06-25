@@ -1,4 +1,0 @@
-Inter-| sta-|   Quality        |   Discarded packets               | Missed | WE
- face | tus | link level noise |  nwid  crypt   frag  retry   misc | beacon | 22
- wlan0: 0000    0     0     0        0      0      0      0      0        0
-  p2p0: 0000    0     0     0        0      0      0      0      0        0

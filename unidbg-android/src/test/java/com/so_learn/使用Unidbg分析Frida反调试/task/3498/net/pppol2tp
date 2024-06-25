@@ -1,6 +1,0 @@
-PPPoL2TP driver info, V2.0
-TUNNEL name, user-data-ok session-count
- debug tx-pkts/bytes/errs rx-pkts/bytes/errs
-  SESSION name, addr/port src-tid/sid dest-tid/sid state user-data-ok
-   mtu/mru/rcvseq/sendseq/lns debug reorderto
-   nr/ns tx-pkts/bytes/errs rx-pkts/bytes/errs
