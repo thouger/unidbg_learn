@@ -14,6 +14,7 @@ public class SimpleMemorySizeDetector implements MemorySizeDetector {
         Instruction insn = disassembler.disasm(code, pc, 1)[0];
         int size = 0;
         switch (insn.getMnemonic()) {
+            case "ldrb":
             case "ldursb":
                 size = 1;
                 break;
@@ -31,6 +32,16 @@ public class SimpleMemorySizeDetector implements MemorySizeDetector {
                     size = 8;
                     break;
                 }
+            case "ldp":
+                if (insn.getOpStr().startsWith("w")) {
+                    size = 8;
+                    break;
+                }
+                if (insn.getOpStr().startsWith("x")) {
+                    size = 16;
+                    break;
+                }
+                break;
             default:
                 log.info("onHit: insn=" + insn);
                 break;

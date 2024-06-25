@@ -22,7 +22,8 @@ static void update_bps(t_unicorn unicorn) {
   int n = kh_size(unicorn->bps_map);
   if(n <= SEARCH_BPS_COUNT) {
     int idx = 0;
-    for (khiter_t k = kh_begin(unicorn->bps_map); k < kh_end(unicorn->bps_map); k++) {
+    khiter_t k;
+    for (k = kh_begin(unicorn->bps_map); k < kh_end(unicorn->bps_map); k++) {
       if(kh_exist(unicorn->bps_map, k)) {
         uint64_t key = kh_key(unicorn->bps_map, k);
         unicorn->bps[idx++] = key;
@@ -32,7 +33,8 @@ static void update_bps(t_unicorn unicorn) {
 }
 
 static inline bool hitBreakPoint(uint64_t bps[], int n, uint64_t address) {
-    for(int i = 0; i < n; i++) {
+    int i;
+    for(i = 0; i < n; i++) {
         if(bps[i] == address) {
             return true;
         }
@@ -54,7 +56,7 @@ JNIEXPORT jlong JNICALL Java_com_github_unidbg_arm_backend_unicorn_Unicorn_nativ
     return 0;
   } else {
     if(arch == UC_ARCH_ARM64) {
-      err = uc_ctl_set_cpu_model(eng, UC_CPU_ARM64_A72);
+      err = uc_ctl_set_cpu_model(eng, UC_CPU_ARM64_MAX);
     } else {
       err = uc_ctl_set_cpu_model(eng, UC_CPU_ARM_CORTEX_A15);
     }
@@ -174,6 +176,23 @@ static void cb_hookmem_new(uc_engine *eng, uc_mem_type type,
          break;
    }
    (*cachedJVM)->DetachCurrentThread(cachedJVM);
+}
+
+/*
+ * Class:     com_github_unidbg_arm_backend_unicorn_Unicorn
+ * Method:    removeCache
+ * Signature: (JJJ)V
+ */
+JNIEXPORT void JNICALL Java_com_github_unidbg_arm_backend_unicorn_Unicorn_removeCache
+  (JNIEnv *env, jclass cls, jlong handle, jlong arg1, jlong arg2) {
+  t_unicorn unicorn = (t_unicorn) handle;
+  uc_engine *eng = unicorn->uc;
+  uint64_t begin = (uint64_t) arg1;
+  uint64_t end = (uint64_t) arg2;
+  uc_err err = uc_ctl_remove_cache(eng, begin, end);
+  if (err != UC_ERR_OK) {
+    throwException(env, err);
+  }
 }
 
 /*

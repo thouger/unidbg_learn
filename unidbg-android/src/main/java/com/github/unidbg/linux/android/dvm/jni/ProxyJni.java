@@ -5,6 +5,7 @@ import com.github.unidbg.linux.android.dvm.DvmClass;
 import com.github.unidbg.linux.android.dvm.DvmField;
 import com.github.unidbg.linux.android.dvm.DvmMethod;
 import com.github.unidbg.linux.android.dvm.DvmObject;
+import com.github.unidbg.linux.android.dvm.Jni;
 import com.github.unidbg.linux.android.dvm.JniFunction;
 import com.github.unidbg.linux.android.dvm.VaList;
 import com.github.unidbg.linux.android.dvm.VarArg;
@@ -25,7 +26,8 @@ class ProxyJni extends JniFunction {
     private final ProxyClassLoader classLoader;
     private final ProxyDvmObjectVisitor visitor;
 
-    ProxyJni(ProxyClassLoader classLoader, ProxyDvmObjectVisitor visitor) {
+    ProxyJni(ProxyClassLoader classLoader, ProxyDvmObjectVisitor visitor, Jni fallbackJni) {
+        super(fallbackJni);
         this.classLoader = classLoader;
         this.visitor = visitor;
     }
@@ -567,6 +569,22 @@ class ProxyJni extends JniFunction {
             log.warn("getBooleanField: " + dvmField, e);
         }
         return super.getBooleanField(vm, dvmObject, dvmField);
+    }
+
+    @Override
+    public byte getByteField(BaseVM vm, DvmObject<?> dvmObject, DvmField dvmField) {
+        try {
+            Class<?> clazz = classLoader.loadClass(dvmObject.getObjectType().getName());
+            ProxyField field = ProxyUtils.findField(clazz, dvmField, visitor);
+            Object thisObj = dvmObject.getValue();
+            if (thisObj == null) {
+                throw new IllegalStateException("obj is null: " + dvmObject);
+            }
+            return field.getByte(thisObj);
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+            log.warn("getByteField: " + dvmField, e);
+        }
+        return super.getByteField(vm, dvmObject, dvmField);
     }
 
     @Override

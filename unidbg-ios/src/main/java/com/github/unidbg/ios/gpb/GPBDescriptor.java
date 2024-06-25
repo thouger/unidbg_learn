@@ -66,7 +66,7 @@ public class GPBDescriptor {
                 int fieldTypeValue = field.callObjcInt("fieldType");
                 int hasDefaultValue = field.callObjcInt("hasDefaultValue");
                 if (hasDefaultValue != 0) {
-                    throw new UnsupportedOperationException("hasDefaultValue=" + hasDefaultValue);
+                    log.warn("hasDefaultValue=" + hasDefaultValue);
                 }
 
                 builder.append("  ");
@@ -76,9 +76,7 @@ public class GPBDescriptor {
                         if (required == optional) {
                             throw new IllegalStateException("fieldName=" + fieldName + ", fieldType=" + fieldTypeValue + ", required=" + required);
                         }
-                        if (optional == 0) {
-                            builder.append("required ");
-                        } else {
+                        if (optional != 0) {
                             builder.append("optional ");
                         }
                         break;

@@ -10,7 +10,7 @@ public class DvmInteger extends DvmObject<Integer> {
         return new DvmInteger(vm, i);
     }
 
-    public DvmInteger(VM vm, Integer value) {
+    private DvmInteger(VM vm, Integer value) {
         super(vm.resolveClass("java/lang/Integer"), value);
     }
 }

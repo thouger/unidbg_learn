@@ -164,8 +164,7 @@ public abstract class AbstractFileIO implements NewFileIO {
 
     @Override
     public FileIO dup2() {
-        return this;
-//        throw new AbstractMethodError(getClass().getName());
+        throw new AbstractMethodError(getClass().getName());
     }
 
     @Override

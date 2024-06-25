@@ -1,8 +1,5 @@
 package com.github.unidbg.linux.android.dvm;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
@@ -11,8 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class DvmMethod extends Hashable {
-
-    private static final Log log = LogFactory.getLog(DvmMethod.class);
 
     private final DvmClass dvmClass;
     final String methodName;
@@ -72,6 +67,11 @@ public class DvmMethod extends Hashable {
     DvmObject<?>  callObjectMethod(DvmObject<?>  dvmObject, VarArg varArg) {
         BaseVM vm = dvmClass.vm;
         return checkJni(vm, dvmClass).callObjectMethod(vm, dvmObject, this, varArg);
+    }
+
+    long callLongMethodA(DvmObject<?> dvmObject, VaList vaList) {
+        BaseVM vm = dvmClass.vm;
+        return checkJni(vm, dvmClass).callLongMethodV(vm, dvmObject, this, vaList);
     }
 
     long callLongMethod(DvmObject<?>  dvmObject, VarArg varArg) {
@@ -159,6 +159,11 @@ public class DvmMethod extends Hashable {
         return checkJni(vm, dvmClass).callStaticIntMethodV(vm, dvmClass, this, vaList);
     }
 
+    long callStaticLongMethodA(VaList vaList) {
+        BaseVM vm = dvmClass.vm;
+        return checkJni(vm, dvmClass).callStaticLongMethodV(vm, dvmClass, this, vaList);
+    }
+
     long callStaticLongMethod(VarArg varArg) {
         BaseVM vm = dvmClass.vm;
         return checkJni(vm, dvmClass).callStaticLongMethod(vm, dvmClass, this, varArg);
@@ -200,12 +205,8 @@ public class DvmMethod extends Hashable {
     }
 
     void callStaticVoidMethodA(VaList vaList) {
-        String signature = dvmClass.getClassName() + "->" + methodName + args;
-        if (log.isDebugEnabled()) {
-            log.debug("callStaticVoidMethodA signature=" + signature);
-        }
         BaseVM vm = dvmClass.vm;
-        checkJni(vm, dvmClass).callStaticVoidMethodV(vm, dvmClass, signature, vaList);
+        checkJni(vm, dvmClass).callStaticVoidMethodV(vm, dvmClass, this, vaList);
     }
 
     DvmObject<?> newObjectV(VaList vaList) {
@@ -229,12 +230,8 @@ public class DvmMethod extends Hashable {
     }
 
     void callVoidMethodA(DvmObject<?>  dvmObject, VaList vaList) {
-        String signature = dvmClass.getClassName() + "->" + methodName + args;
-        if (log.isDebugEnabled()) {
-            log.debug("callVoidMethodV signature=" + signature + ", dvmObject=" + dvmObject);
-        }
         BaseVM vm = dvmClass.vm;
-        checkJni(vm, dvmClass).callVoidMethodV(vm, dvmObject, signature, vaList);
+        checkJni(vm, dvmClass).callVoidMethodV(vm, dvmObject, this, vaList);
     }
 
     float callFloatMethodV(DvmObject<?>  dvmObject, VaList vaList) {

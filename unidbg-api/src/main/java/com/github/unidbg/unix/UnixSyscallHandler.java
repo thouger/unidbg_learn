@@ -46,6 +46,14 @@ public abstract class UnixSyscallHandler<T extends NewFileIO> implements Syscall
         return fdMap.get(fd);
     }
 
+    @Override
+    public void closeFileIO(int fd) {
+        FileIO io = fdMap.remove(fd);
+        if (io != null) {
+            io.close();
+        }
+    }
+
     protected boolean verbose;
 
     @Override
@@ -88,6 +96,13 @@ public abstract class UnixSyscallHandler<T extends NewFileIO> implements Syscall
     }
 
     @Override
+    public int addFileIO(T io) {
+        int fd = getMinFd();
+        fdMap.put(fd, io);
+        return fd;
+    }
+
+    @Override
     public void addIOResolver(IOResolver<T> resolver) {
         if (!resolvers.contains(resolver)) {
             resolvers.add(0, resolver);
@@ -115,6 +130,8 @@ public abstract class UnixSyscallHandler<T extends NewFileIO> implements Syscall
         if (result != null && result.isSuccess()) {
             emulator.getMemory().setErrno(0);
             return result;
+        } else if (failResult == null) {
+            failResult = result;
         }
 
         Family family = emulator.getFamily();
@@ -164,6 +181,10 @@ public abstract class UnixSyscallHandler<T extends NewFileIO> implements Syscall
 
     protected abstract T createByteArrayFileIO(String pathname, int oflags, byte[] data);
 
+    protected long currentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
     @SuppressWarnings("unused")
     protected int gettimeofday(Emulator<?> emulator, Pointer tv, Pointer tz) {
         if (log.isDebugEnabled()) {
@@ -179,7 +200,7 @@ public abstract class UnixSyscallHandler<T extends NewFileIO> implements Syscall
             Inspector.inspect(before, "gettimeofday tz");
         }
 
-        long currentTimeMillis = System.currentTimeMillis();
+        long currentTimeMillis = currentTimeMillis();
         long tv_sec = currentTimeMillis / 1000;
         long tv_usec = (currentTimeMillis % 1000) * 1000;
         TimeVal32 timeVal = new TimeVal32(tv);
@@ -221,7 +242,7 @@ public abstract class UnixSyscallHandler<T extends NewFileIO> implements Syscall
             Inspector.inspect(before, "gettimeofday tz");
         }
 
-        long currentTimeMillis = System.currentTimeMillis();
+        long currentTimeMillis = currentTimeMillis();
         long tv_sec = currentTimeMillis / 1000;
         long tv_usec = (currentTimeMillis % 1000) * 1000;
         TimeVal64 timeVal = new TimeVal64(tv);

@@ -6,6 +6,7 @@ import com.github.unidbg.AndroidEmulator;
 import com.github.unidbg.Emulator;
 import com.github.unidbg.Module;
 import com.github.unidbg.arm.TraceFunctionCall;
+import com.github.unidbg.arm.backend.Backend;
 import com.github.unidbg.arm.backend.Unicorn2Factory;
 import com.github.unidbg.debugger.Debugger;
 import com.github.unidbg.debugger.FunctionCallListener;
@@ -19,11 +20,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Signal64Test {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Logger.getLogger(AbstractEmulator.class).setLevel(Level.INFO);
         Logger.getLogger(ARM64SyscallHandler.class).setLevel(Level.INFO);
         Logger.getLogger(AndroidSyscallHandler.class).setLevel(Level.INFO);
@@ -66,6 +66,8 @@ public class Signal64Test {
             }
         });
         emulator.traceCode(module.base, module.base + module.size);
+        Backend backend = emulator.getBackend();
+        backend.removeJitCodeCache(module.base, module.base + module.size);
     }
 
     private void test() {

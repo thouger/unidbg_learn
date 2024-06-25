@@ -4,7 +4,6 @@ import com.github.unidbg.Emulator;
 import com.github.unidbg.linux.LinuxModule;
 import com.github.unidbg.unwind.Frame;
 import com.github.unidbg.unwind.SimpleARM64Unwinder;
-import net.fornwall.jelf.ArmExIdx;
 import net.fornwall.jelf.DwarfCursor;
 import net.fornwall.jelf.DwarfCursor64;
 import net.fornwall.jelf.GnuEhFrameHeader;
@@ -32,7 +31,8 @@ class AndroidARM64Unwinder extends SimpleARM64Unwinder {
             MemoizedObject<GnuEhFrameHeader> ehFrameHeader = module == null ? null : module.ehFrameHeader;
             if (ehFrameHeader != null) {
                 long fun = this.context.ip - module.base;
-                Frame ret = ehFrameHeader.getValue().dwarf_step(emulator, this, module, fun, context);
+                GnuEhFrameHeader frameHeader = ehFrameHeader.getValue();
+                Frame ret = frameHeader == null ? null : frameHeader.dwarf_step(emulator, this, module, fun, context);
                 if (ret != null) {
                     return ret;
                 }

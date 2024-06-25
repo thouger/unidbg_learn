@@ -123,6 +123,7 @@ typedef enum UIAccessibilityContrast : NSInteger {
 - (void)setFill;
 - (UIColor *)colorWithAlphaComponent:(CGFloat)alpha;
 - (UIColor *)initWithWhite:(CGFloat)white alpha:(CGFloat)alpha;
+- (UIColor *)initWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha;
 @end
 
 @interface UIImageAsset : NSObject
@@ -322,6 +323,10 @@ typedef enum UIUserInterfaceIdiom : NSInteger {
 - (void) callWithInvocation: (NSTimerInvocation *) invocation;
 @end
 
+@interface NSIndexPath (Foundation)
++ (id)indexPathForRow:(NSInteger)row inSection:(NSInteger)section;
+@end
+
 @interface NSError (Foundation)
 + (id (^)(NSError *, NSErrorUserInfoKey))userInfoValueProviderForDomain:(NSErrorDomain)errorDomain;
 + (void)setUserInfoValueProviderForDomain:(NSErrorDomain)errorDomain
@@ -335,6 +340,10 @@ typedef enum UIUserInterfaceIdiom : NSInteger {
 
 @interface NSDateFormatter (Foundation)
 - (void)setLocalizedDateFormatFromTemplate:(NSString *)dateFormatTemplate;
+@end
+
+@interface NSKeyedArchiver (Foundation)
+- (id)initRequiringSecureCoding:(BOOL)requiresSecureCoding;
 @end
 
 @interface UIScreen : NSObject
@@ -419,4 +428,11 @@ BOOL UIAccessibilityDarkerSystemColorsEnabled();
 - (unsigned long long)unsignedLongLongValue;
 - (unsigned long long)unsignedLongValue;
 - (unsigned short)unsignedShortValue;
+@end
+
+typedef NSInteger LAPolicy;
+
+@interface LAContext : NSObject
+- (BOOL) canEvaluatePolicy:(LAPolicy) policy
+                     error:(NSError * *) error;
 @end

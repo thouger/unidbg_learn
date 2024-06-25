@@ -8,6 +8,8 @@ import com.github.unidbg.file.FileIO;
 import com.github.unidbg.file.ios.BaseDarwinFileIO;
 import com.github.unidbg.file.ios.IOConstants;
 import com.github.unidbg.file.ios.StatStructure;
+import com.github.unidbg.ios.struct.kernel.StatFS;
+import com.github.unidbg.pointer.UnidbgPointer;
 import com.github.unidbg.unix.IO;
 import com.github.unidbg.utils.Inspector;
 import com.sun.jna.Pointer;
@@ -59,6 +61,19 @@ public class SimpleFileIO extends BaseDarwinFileIO implements FileIO {
         if (!file.exists()) {
             throw new IllegalArgumentException("file not exists: " + file);
         }
+    }
+
+    @Override
+    public int fcntl(Emulator<?> emulator, int cmd, long arg) {
+        if (cmd == F_GETPATH) {
+            UnidbgPointer pointer = UnidbgPointer.pointer(emulator, arg);
+            if (pointer != null) {
+                pointer.setString(0, getPath());
+            }
+            return 0;
+        }
+
+        return super.fcntl(emulator, cmd, arg);
     }
 
     @Override
@@ -239,6 +254,13 @@ public class SimpleFileIO extends BaseDarwinFileIO implements FileIO {
     @Override
     public int listxattr(Pointer namebuf, int size, int options) {
         return listxattr(file, namebuf, size);
+    }
+
+    @Override
+    public int fstatfs(StatFS statFS) {
+        statFS.f_iosize = (int) file.length();
+        statFS.pack();
+        return 0;
     }
 
     @Override

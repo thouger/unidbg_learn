@@ -452,7 +452,7 @@ public abstract class AbstractARMDebugger implements Debugger {
     private PrintStream traceWriteRedirectStream;
 
     final boolean handleCommon(Backend backend, String line, long address, int size, long nextAddress, DebugRunnable<?> runnable) throws Exception {
-        if ("exit".equals(line) || "quit".equals(line)) { // continue
+        if ("exit".equals(line) || "quit".equals(line) || "q".equals(line)) { // continue
             return true;
         }
         if ("gc".equals(line)) {
@@ -537,21 +537,21 @@ public abstract class AbstractARMDebugger implements Debugger {
         }
         if (emulator.getFamily() == Family.iOS && !emulator.isRunning() && line.startsWith("dump ")) {
             String className = line.substring(5).trim();
-            if (className.length() > 0) {
+            if (!className.isEmpty()) {
                 dumpClass(className);
                 return false;
             }
         }
         if (emulator.getFamily() == Family.iOS && !emulator.isRunning() && line.startsWith("gpb ")) {
             String className = line.substring(4).trim();
-            if (className.length() > 0) {
+            if (!className.isEmpty()) {
                 dumpGPBProtobufMsg(className);
                 return false;
             }
         }
         if (emulator.getFamily() == Family.iOS && !emulator.isRunning() && line.startsWith("search ")) {
             String keywords = line.substring(7).trim();
-            if (keywords.length() > 0) {
+            if (!keywords.isEmpty()) {
                 searchClass(keywords);
                 return false;
             }
@@ -608,7 +608,7 @@ public abstract class AbstractARMDebugger implements Debugger {
                 traceRead.setRedirect(traceReadRedirectStream);
                 System.out.printf("Set trace all memory read success with trace file: %s.%n", traceFile.getAbsolutePath());
             }
-            emulator.getBackend().hook_add_new((ReadHook) traceRead, begin, end, emulator);
+            backend.hook_add_new((ReadHook) traceRead, begin, end, emulator);
             return false;
         }
         if (line.startsWith("traceWrite")) { // start trace memory write
@@ -662,7 +662,7 @@ public abstract class AbstractARMDebugger implements Debugger {
                 traceWrite.setRedirect(traceWriteRedirectStream);
                 System.out.printf("Set trace all memory write success with trace file: %s.%n", traceFile.getAbsolutePath());
             }
-            emulator.getBackend().hook_add_new((WriteHook) traceWrite, begin, end, emulator);
+            backend.hook_add_new((WriteHook) traceWrite, begin, end, emulator);
             return false;
         }
         if (line.startsWith("trace")) { // start trace instructions
@@ -712,7 +712,7 @@ public abstract class AbstractARMDebugger implements Debugger {
                     }
                 }
                 File traceFile = null;
-                if (redirect != null && redirect.trim().length() > 0) {
+                if (redirect != null && !redirect.trim().isEmpty()) {
                     Module check = memory.findModule(redirect);
                     if (check != null) {
                         module = check;
@@ -739,7 +739,7 @@ public abstract class AbstractARMDebugger implements Debugger {
             if (traceHookRedirectStream != null) {
                 traceHook.setRedirect(traceHookRedirectStream);
             }
-            emulator.getBackend().hook_add_new(traceHook, begin, end, emulator);
+            backend.hook_add_new(traceHook, begin, end, emulator);
             return false;
         }
         if (line.startsWith("vm")) {
@@ -836,7 +836,7 @@ public abstract class AbstractARMDebugger implements Debugger {
                 KeystoneEncoded encoded = keystone.assemble(assembly);
                 byte[] code = encoded.getMachineCode();
                 address &= (~1);
-                if (code.length != nextAddress - address) {
+                if (code.length != (nextAddress & ~1) - address) {
                     System.err.println("patch code failed: nextAddress=0x" + Long.toHexString(nextAddress) + ", codeSize=" + code.length);
                     return false;
                 }
@@ -943,35 +943,39 @@ public abstract class AbstractARMDebugger implements Debugger {
                 new CodeHistory(address, size, thumb))
         ) {
             Instruction[] instructions = history.disassemble(emulator);
-            for (Instruction ins : instructions) {
-                if (ins.getAddress() == address) {
+            if (instructions != null) {
+                for (Instruction ins : instructions) {
+                    if (ins.getAddress() == address) {
+                        sb.append("=> *");
+                        on = true;
+                    } else {
+                        sb.append("    ");
+                        if (on) {
+                            next = ins.getAddress();
+                            on = false;
+                        }
+                    }
+                    sb.append(ARM.assembleDetail(emulator, ins, ins.getAddress(), history.thumb, on, maxLength)).append('\n');
+                    nextAddr += ins.getBytes().length;
+                }
+            }
+        }
+        Instruction[] insns = emulator.disassemble(nextAddr, 4 * 15, 15);
+        if (insns != null) {
+            for (Instruction ins : insns) {
+                if (nextAddr == address) {
                     sb.append("=> *");
                     on = true;
                 } else {
                     sb.append("    ");
                     if (on) {
-                        next = ins.getAddress();
+                        next = nextAddr;
                         on = false;
                     }
                 }
-                sb.append(ARM.assembleDetail(emulator, ins, ins.getAddress(), history.thumb, on, maxLength)).append('\n');
-                nextAddr += ins.getBytes().length;
+                sb.append(ARM.assembleDetail(emulator, ins, nextAddr, thumb, on, maxLength)).append('\n');
+                nextAddr += ins.getSize();
             }
-        }
-        Instruction[] insns = emulator.disassemble(nextAddr, 4 * 15, 15);
-        for (Instruction ins : insns) {
-            if (nextAddr == address) {
-                sb.append("=> *");
-                on = true;
-            } else {
-                sb.append("    ");
-                if (on) {
-                    next = nextAddr;
-                    on = false;
-                }
-            }
-            sb.append(ARM.assembleDetail(emulator, ins, nextAddr, thumb, on, maxLength)).append('\n');
-            nextAddr += ins.getSize();
         }
         System.out.println(sb);
         if (on) {
@@ -1018,7 +1022,7 @@ public abstract class AbstractARMDebugger implements Debugger {
                 if (name.length() > maxLength) {
                     name = name.substring(name.length() - maxLength);
                 }
-                module = new Module(name, region.begin, region.end - region.begin, Collections.<String, Module>emptyMap(), Collections.<MemRegion>emptyList(), null) {
+                module = new Module(name, region.begin, region.end - region.begin, Collections.emptyMap(), Collections.emptyList(), null) {
                     @Override
                     public Number callFunction(Emulator<?> emulator, long offset, Object... args) {
                         throw new UnsupportedOperationException();

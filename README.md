@@ -8,9 +8,6 @@ Use it at your own risk !
 
 ## License
 - unidbg uses software libraries from [Apache Software Foundation](http://apache.org). 
-- unidbg developer Idea enterprise licenses are supported by [Jetbrains](https://www.jetbrains.com?from=unidbg).
-- [IntelliJ IDEA](https://www.jetbrains.com/idea?from=unidbg) can be used to edit unidbg sources.
-- ![](assets/idea_logo.svg)
 
 Simple tests under src/test directory
 - [unidbg-android/src/test/java/com/bytedance/frameworks/core/encrypt/TTEncrypt.java](https://github.com/zhkl0228/unidbg/blob/master/unidbg-android/src/test/java/com/bytedance/frameworks/core/encrypt/TTEncrypt.java)  
@@ -38,9 +35,9 @@ Simple tests under src/test directory
 - Support JavaVM, JNIEnv.
 - Emulation of syscalls instruction.
 - Support ARM32 and ARM64.
-- Inline hook, thanks to [Dobby](https://github.com/jmpews/Dobby).
-- Android import hook, thanks to [xHook](https://github.com/iqiyi/xHook).
-- iOS [fishhook](https://github.com/facebook/fishhook) and substrate and [whale](https://github.com/asLody/whale) hook.
+- Inline utils.hook, thanks to [Dobby](https://github.com/jmpews/Dobby).
+- Android import utils.hook, thanks to [xHook](https://github.com/iqiyi/xHook).
+- iOS [fishhook](https://github.com/facebook/fishhook) and substrate and [whale](https://github.com/asLody/whale) utils.hook.
 - [unicorn](https://github.com/zhkl0228/unicorn) backend support simple console debugger, gdb stub, instruction trace, memory read/write trace.
 - Support iOS objc and swift runtime.
 - Support [dynarmic](https://github.com/MerryMage/dynarmic) fast backend.

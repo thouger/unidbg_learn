@@ -44,11 +44,21 @@ public abstract class BaseVM implements VM, DvmClassFactory {
 
     DvmObject<?> throwable;
 
-    boolean verbose;
+    boolean verbose, verboseMethodOperation, verboseFieldOperation;
 
     @Override
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
+    }
+
+    @Override
+    public void setVerboseMethodOperation(boolean verboseMethodOperation) {
+        this.verboseMethodOperation = verboseMethodOperation;
+    }
+
+    @Override
+    public void setVerboseFieldOperation(boolean verboseFieldOperation) {
+        this.verboseFieldOperation = verboseFieldOperation;
     }
 
     @Override
@@ -82,7 +92,9 @@ public abstract class BaseVM implements VM, DvmClassFactory {
         ObjRef(DvmObject<?> obj, boolean weak) {
             this.obj = obj;
             this.weak = weak;
+            this.refCount = 1;
         }
+        int refCount;
         @Override
         public String toString() {
             return String.valueOf(obj);
@@ -118,8 +130,8 @@ public abstract class BaseVM implements VM, DvmClassFactory {
                 dvmClass = this.createClass(this, className, superClass, interfaceClasses);
             }
             classMap.put(hash, dvmClass);
-            addGlobalObject(dvmClass);
         }
+        addGlobalObject(dvmClass);
         return dvmClass;
     }
 
@@ -138,10 +150,16 @@ public abstract class BaseVM implements VM, DvmClassFactory {
             ((DvmAwareObject) value).initializeDvm(emulator, this, object);
         }
         if (global) {
-            if (weak) {
-                weakGlobalObjectMap.put(hash, new ObjRef(object, true));
+            ObjRef old = weak ? weakGlobalObjectMap.get(hash) : globalObjectMap.get(hash);
+            if (old == null) {
+                old = new ObjRef(object, weak);
             } else {
-                globalObjectMap.put(hash, new ObjRef(object, false));
+                old.refCount++;
+            }
+            if (weak) {
+                weakGlobalObjectMap.put(hash, old);
+            } else {
+                globalObjectMap.put(hash, old);
             }
         } else {
             localObjectMap.put(hash, new ObjRef(object, weak));
@@ -207,7 +225,7 @@ public abstract class BaseVM implements VM, DvmClassFactory {
             if (log.isTraceEnabled()) {
                 emulator.attach().debug();
             }
-            throw new IllegalStateException("Illegal JNI version: 0x" + Integer.toHexString(version));
+//            throw new IllegalStateException("Illegal JNI version: 0x" + Integer.toHexString(version));
         }
     }
 

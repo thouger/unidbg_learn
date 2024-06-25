@@ -16,4 +16,7 @@ public abstract class AbstractBackend implements Backend {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void removeJitCodeCache(long begin, long end) throws BackendException {
+    }
 }

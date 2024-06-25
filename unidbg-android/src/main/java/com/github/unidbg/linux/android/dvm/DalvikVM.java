@@ -2,7 +2,9 @@ package com.github.unidbg.linux.android.dvm;
 
 import com.github.unidbg.AndroidEmulator;
 import com.github.unidbg.Emulator;
+import com.github.unidbg.arm.ArmHook;
 import com.github.unidbg.arm.ArmSvc;
+import com.github.unidbg.arm.HookStatus;
 import com.github.unidbg.arm.backend.BackendException;
 import com.github.unidbg.arm.context.EditableArm32RegisterContext;
 import com.github.unidbg.arm.context.RegisterContext;
@@ -278,12 +280,16 @@ public class DalvikVM extends BaseVM implements VM {
                 if (log.isDebugEnabled()) {
                     log.debug("DeleteGlobalRef object=" + object);
                 }
-                ObjRef ref = object == null ? null : globalObjectMap.remove(object.toIntPeer());
+                ObjRef ref = object == null ? null : globalObjectMap.get(object.toIntPeer());
                 if (ref != null) {
-                    ref.obj.onDeleteRef();
+                    ref.refCount--;
+                    if (ref.refCount <= 0) {
+                        globalObjectMap.remove(object.toIntPeer());
+                        ref.obj.onDeleteRef();
+                    }
                 }
                 if (verbose) {
-                    System.out.printf("JNIEnv->DeleteGlobalRef(%s) was called from %s%n", ref, context.getLRPointer());
+                    System.out.printf("JNIEnv->DeleteGlobalRef(%s) was called from %s%n", ref == null ? object : ref, context.getLRPointer());
                 }
                 return 0;
             }
@@ -2009,9 +2015,9 @@ public class DalvikVM extends BaseVM implements VM {
             }
         });
 
-        Pointer _CallStaticLongMethod = svcMemory.registerSvc(new ArmSvc() {
+        Pointer _CallStaticLongMethod = svcMemory.registerSvc(new ArmHook() {
             @Override
-            public long handle(Emulator<?> emulator) {
+            protected HookStatus hook(Emulator<?> emulator) {
                 EditableArm32RegisterContext context = emulator.getContext();
                 UnidbgPointer clazz = context.getPointerArg(1);
                 UnidbgPointer jmethodID = context.getPointerArg(2);
@@ -2029,7 +2035,7 @@ public class DalvikVM extends BaseVM implements VM {
                         System.out.printf("JNIEnv->CallStaticLongMethod(%s, %s(%s)) was called from %s%n", dvmClass, dvmMethod.methodName, varArg.formatArgs(), context.getLRPointer());
                     }
                     context.setR1((int) (value >> 32));
-                    return (value & 0xffffffffL);
+                    return HookStatus.LR(emulator, value & 0xffffffffL);
                 }
             }
         });
@@ -2934,7 +2940,7 @@ public class DalvikVM extends BaseVM implements VM {
                     log.debug("GetStringChars string=" + string + ", isCopy=" + isCopy + ", value=" + value + ", lr=" + context.getLRPointer());
                 }
                 if (verbose) {
-                    System.out.printf("JNIEnv->GetStringUTFChars(\"%s\") was called from %s%n", string, context.getLRPointer());
+                    System.out.printf("JNIEnv->GetStringUTFChars(\"%s\") was called from %s%n", value, context.getLRPointer());
                 }
                 byte[] data = Arrays.copyOf(bytes, bytes.length + 1);
                 UnidbgPointer pointer = string.allocateMemoryBlock(emulator, data.length);
@@ -3512,10 +3518,8 @@ public class DalvikVM extends BaseVM implements VM {
                 ObjRef dvmGlobalObject;
                 if (globalObjectMap.containsKey(hash)) {
                     dvmGlobalObject = globalObjectMap.get(hash);
-                } else if (weakGlobalObjectMap.containsKey(hash)) {
-                    dvmGlobalObject = weakGlobalObjectMap.get(hash);
                 } else {
-                    dvmGlobalObject = null;
+                    dvmGlobalObject = weakGlobalObjectMap.getOrDefault(hash, null);
                 }
                 if (log.isDebugEnabled()) {
                     log.debug("GetObjectRefType object=" + object + ", dvmGlobalObject=" + dvmGlobalObject + ", dvmLocalObject=" + dvmLocalObject + ", LR=" + context.getLRPointer());
